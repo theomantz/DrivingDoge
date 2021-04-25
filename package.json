@@ -1,0 +1,31 @@
+{
+  "name": "drivingdoge",
+  "version": "1.0.0",
+  "description": "A data visualization app utilizing twitter developer api and azure sentiment analysis",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theomantz/DrivingDoge.git"
+  },
+  "keywords": [
+    "Sentiment",
+    "Social",
+    "Media",
+    "Twitter",
+    "Azure"
+  ],
+  "author": "Theo Mantz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theomantz/DrivingDoge/issues"
+  },
+  "homepage": "https://github.com/theomantz/DrivingDoge#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.17.1",
+    "webpack": "^5.35.1"
+  }
+}
