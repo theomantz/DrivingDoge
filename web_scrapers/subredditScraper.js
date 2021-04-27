@@ -33,4 +33,4 @@ function parseSubCount(string) {
   return parseFloat(number.slice(0, -1)) * multipliers[number.slice(-1)]
 }
 
-module.exports = getSubreddits
+module.exports = getSubreddits;

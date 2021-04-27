@@ -3,6 +3,26 @@ const Schema = mongoose.Schema;
 
 const SubredditSchema = new Schema(
   {
-    
+    shortLink: {
+      type: String,
+      require: true
+    },
+    longLink: {
+      type: String,
+      required: true
+    },
+    subCount: {
+      type: Number,
+      required: false
+    },
+    queryParams: {
+      type: [String],
+      required: true
+    }
+  },
+  {
+    timestamps: true
   }
 )
+
+module.exports = Subreddit = mongoose.model("Subreddit", SubredditSchema);
