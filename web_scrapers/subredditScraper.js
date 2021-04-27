@@ -5,7 +5,7 @@ const cheerio = require('cheerio')
 async function getSubreddits(param) {
   const URL = `https://www.reddit.com/search?q=${param}&type=sr%2Cuser`;
   const html = await axios.get(URL)
-  parseSubreddits(html.data, param)
+  return parseSubreddits(html.data, param)
 };
 
 function parseSubreddits(html, param) {

@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express();
-import {
-  getSubreddits
-} from './web_scrapers/subredditScraper'
+const path = require('path')
+const getSubreddits = require('./web_scrapers/subredditScraper');
 const admin = require('firebase-admin');
 const serviceAccount = require('./config/firebase_credentials.json');
 
@@ -12,7 +11,11 @@ admin.initializeApp({
 });
 
 
-const db = admin.firestore();
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './src/index.html'))
+})
+
+// const db = admin.firestore();
 app.post('subreddits/:subreddit', (req, res) => {
   console.log(req.params)
   const subredditsObject = getSubreddits(req.params.subreddit)

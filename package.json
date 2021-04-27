@@ -36,6 +36,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^9.6.0",
     "moment": "^2.29.1",
+    "mongoose": "^5.12.5",
     "uuid": "^8.3.2",
     "webpack-cli": "^4.6.0"
   },
@@ -44,5 +45,8 @@
     "sass": "^1.32.11",
     "sass-loader": "^11.0.1",
     "webpack": "^5.35.1"
+  },
+  "engines": {
+    "node": "14.15.0"
   }
 }
