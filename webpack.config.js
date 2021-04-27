@@ -9,12 +9,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: [/\.js?$/],
-        exclude: /(node_modules)/,
+        test: [/\.js$/],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/env']
+            presets: ['@babel/env'],
+            exclude: /(node_modules)/,
           }
         },
       },
@@ -30,6 +30,6 @@ module.exports = {
   },
   devtool: 'source-map',
   resolve: {
-    extensions: ['.js', '.jsx', '*']
+    extensions: ['.js']
   }
 };

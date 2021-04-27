@@ -4,10 +4,9 @@
   "description": "A data visualization app utilizing twitter developer api and azure sentiment analysis",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "NODE_ENV=development webpack-dev-server --config webpack.dev.js ",
-    "watch": "NODE_ENV=development webpack --watch --config webpack.dev.js",
-    "build": "NODE_ENV=production webpack --config webpack.prod.js"
+    "build": "webpack --watch",
+    "start": "node app.js",
+    "start:debug": "DEBUG=* node app.js"
   },
   "repository": {
     "type": "git",
