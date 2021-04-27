@@ -3,8 +3,11 @@ const cheerio = require("cheerio");
 
 async function getPosts(param) {
   const URL = `https://www.reddit.com/search?q=${param}`;
-  const html = await axios.get(URL);
-  parsePosts(html.data, param);
+  return await axios.get(URL)
+    .then(html => {
+      return parsePosts(html.data, param);
+    })
+    .catch(err => console.log(err))
 }
 
 function parsePosts(html, param) {
@@ -17,11 +20,10 @@ function parsePosts(html, param) {
       let splitPath = partialPath.split('/')
       const id = `${splitPath[2]}_${splitPath[4]}`
       let div = $(post).children('div').toArray[1]
-      let userAuthorDiv = $(div[0]).children('div')
+      let userAuthorDiv = $(div).children('div')
       postsObject[id] = {
         rawTitle: rawTitle,
         subreddit: splitPath[2],
-
       }
     }
   );
