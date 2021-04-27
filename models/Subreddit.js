@@ -15,8 +15,8 @@ const SubredditSchema = new Schema(
       type: Number,
       required: false
     },
-    queryParams: {
-      type: [String],
+    queries: {
+      type: [mongoose.Schema.Types.ObjectId],
       required: true
     }
   },

@@ -1,9 +1,19 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+
+// Scrapers Route - maybe use?
 const scrapers = require('./routes/api/scrapers');
+
+// Scraper utilities
 const getSubreddits = require('./web_scrapers/subredditScraper')
+
+// Mongoose models
 const Subreddit = require('./models/Subreddit');
+const Query = require('./models/Query');
+
+// Validators
+const validateQueryInput = require('./validation/query');
 
 app.use(express.static('src'))
 app.use(scrapers)
@@ -25,25 +35,56 @@ mongoose
   .then(() => console.log("Connected to MongoDB Successfully"))
   .catch((err) => console.log(err));
 
-app.get("/scrapers/:subreddit", (req, res) => {
-  let subredditsObject
-  getSubreddits(req.params.subreddit)
-    .then(subredditsObject => {
-        Object.keys(subredditsObject).forEach((subreddit) => {
-          Subreddit.findOneAndUpdate(
-            {
-              shortLink: subredditsObject[subreddit].shortLink,
-            },
-            {
-              subCount: subredditsObject[subreddit].subCount,
-              $push: { queryParams: subredditsObject[subreddit].queryParams },
-            },
-            {
-              upsert: true,
-            }
-          )
-        });
-    }).then(res.json(subredditsObject).status(200)).catch(err => console.log(err))
+app.get("/query/:query", (req, res) => {
+  console.log('request received')
+  const { errors, isValid, asset } = validateQueryInput(req.params.query);
+  console.log(`query params ${isValid}`)
+  if(!isValid) {
+    return res.status(400).json(errors)
+  }
+  console.log(asset)
+  Query.findOne({query: asset})
+    .then(queryObject => {
+        if(!queryObject) {
+          console.log(`generating new query`)
+          newQuery = new Query({
+            query: asset
+          })
+          newQuery.save()
+          .then(query => {
+            console.log('query saved')
+            queryObject = query
+          })
+        }
+        getSubreddits(asset)
+          .then((subredditsObject) => {
+            Object.keys(subredditsObject).forEach((subreddit) => {
+              Subreddit.findOneAndUpdate(
+                {
+                  shortLink: subredditsObject[subreddit].shortLink,
+                },
+                {
+                  longLink: subredditsObject[subreddit].link,
+                  subCount: subredditsObject[subreddit].subCount,
+                  $push: {
+                    queries: queryObject.id,
+                  },
+                },
+                {
+                  upsert: true,
+                }
+              ).then((subredditModelObject) =>{
+                subredditModelObject.save()
+                  .then(object => queryObject.updateOne( 
+                    {$push:{ subreddits: object.id }}
+                ))
+              });
+            });
+          })
+          .catch((err) => console.log(err));
+          queryObject.save()
+            .then( queryObject => res.status(200).json(queryObject) )
+    })
 })
 
 const PORT = process.env.PORT || 5000;
