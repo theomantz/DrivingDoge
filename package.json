@@ -4,7 +4,7 @@
   "description": "A data visualization app utilizing twitter developer api and azure sentiment analysis",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --watch",
+    "build": "webpack",
     "start": "node app.js",
     "start:debug": "DEBUG=* node app.js"
   },
