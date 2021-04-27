@@ -1,0 +1,52 @@
+{
+  "name": "drivingdoge",
+  "version": "1.0.0",
+  "description": "A data visualization app utilizing twitter developer api and azure sentiment analysis",
+  "main": "app.js",
+  "scripts": {
+    "build": "webpack --watch --mode=development",
+    "start": "node app.js",
+    "start:debug": "DEBUG=* node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theomantz/DrivingDoge.git"
+  },
+  "keywords": [
+    "Sentiment",
+    "Social",
+    "Media",
+    "Twitter",
+    "Azure"
+  ],
+  "author": "Theo Mantz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theomantz/DrivingDoge/issues"
+  },
+  "homepage": "https://github.com/theomantz/DrivingDoge#readme",
+  "dependencies": {
+    "@azure/ai-text-analytics": "^5.0.1",
+    "@babel/core": "^7.13.16",
+    "@babel/preset-env": "^7.13.15",
+    "axios": "^0.21.1",
+    "babel-loader": "^8.2.2",
+    "cheerio": "^1.0.0-rc.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.6.0",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.5",
+    "uuid": "^8.3.2",
+    "webpack-cli": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "sass": "^1.32.11",
+    "sass-loader": "^11.0.1",
+    "webpack": "^5.35.1"
+  },
+  "engines": {
+    "node": "14.15.0"
+  }
+}

@@ -1,2 +1,5 @@
 node_modules/
+functions/node_modules/
+config/firebase_credentials.json
+
 config/keys_dev.js

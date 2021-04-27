@@ -1,2 +1,4 @@
 # DrivingDoge
-An app utilizing Twitter API and Azure Sentiment services to visualize social media sentiment around Doge, and the accounts driving sentiment.
+
+A Vanilla JS App which using webscraping and Tensorflow JS to develop sentiment modals
+from Reddit threads and posts.
