@@ -4,8 +4,14 @@ const cheerio = require('cheerio')
 
 async function getSubreddits(param) {
   const URL = `https://www.reddit.com/search?q=${param}&type=sr%2Cuser`;
-  const html = await axios.get(URL)
-  return parseSubreddits(html.data, param)
+  return await axios.get(URL)
+    .then(html => {
+      console.log('received valid HTML')
+      return parseSubreddits(html.data, param)
+    })
+    .catch(error => {
+      return console.log(error.response)
+    })
 };
 
 function parseSubreddits(html, param) {
@@ -15,6 +21,7 @@ function parseSubreddits(html, param) {
     const title = $(element).attr('href')
     if (title.slice(0,3) === '/r/') {
       subRedditObjects[title.slice(3, -1)] ={
+        shortLink: title,
         link: `https://www.reddit.com${title}`,
         subCount: parseSubCount($(element).find('div > div > div').last().text()),
         description: $($(element).children('div').toArray()[1]).text(),
@@ -22,6 +29,7 @@ function parseSubreddits(html, param) {
       }
     }
   });
+  console.log('returning objects')
   return subRedditObjects
 }
 

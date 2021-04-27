@@ -1,12 +1,12 @@
 const express = require("express")
 const router = express.Router();
-const getSubreddits = require("./web_scrapers/subredditScraper");
+const getSubreddits = require("../../web_scrapers/subredditScraper");
 const Subreddit = require('../../models/Subreddit')
 const Post = require('../../models/Post')
 const Comment = require('../../models/Comment')
 
 
-router.post("subreddits/:subreddit", (req, res) => {
+router.post("/:subreddit", (req, res) => {
   console.log(req.params);
   const subredditsObject = getSubreddits(req.params.subreddit);
   const subReddits = db.collection("subreddits");
@@ -18,3 +18,5 @@ router.post("subreddits/:subreddit", (req, res) => {
       .catch((err) => res.status(400).json(err));
   });
 });
+
+module.exports = router;
