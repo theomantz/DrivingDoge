@@ -3,8 +3,6 @@ const app = express();
 import {
   getSubreddits
 } from './web_scrapers/subredditScraper'
-const path = require('path');
-const axios = require('axios');
 const admin = require('firebase-admin');
 const serviceAccount = require('./config/firebase_credentials.json');
 
