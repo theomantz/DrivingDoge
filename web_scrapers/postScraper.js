@@ -1,6 +1,6 @@
 const axios = require("axios");
-const { ObjectId } = require("bson");
 const cheerio = require("cheerio");
+const Query = require('../models/Query')
 const Post = require('../models/Post');
 const Subreddit = require('../models/Subreddit');
 
@@ -40,31 +40,35 @@ const queryObject = {
 };
 
 
-async function subredditIterator(queryObject) {
+function constructPostsBySubreddit(queryObject) {
   const subredditIds = queryObject.subreddits
-  subredditIds.forEach(id => {
-    console.log(id)
-    console.log(new ObjectId(id))
-    Subreddit.findById(new ObjectId(id))
-      .then(subredditObject => {
-        const { longLink } = subredditObject
-        console.log(subredditObject)
-        getPosts(longLink, {query: queryObject.query, queryId: id })
-      }).catch(err => console.log(err))
-  })
+  for (const id of subredditIds) {
+    Subreddit.findById(id, (err, subredditObject) => {
+      const { longLink } = subredditObject
+      // console.log(subredditObject)
+      getPosts(longLink, {
+        query: queryObject.query, 
+        subredditObject: subredditObject,
+        queryObject: queryObject
+      })
+    })
+  }
+  const updatedQuery = Query.findById(queryObject.id).exec()
+  return updatedQuery
 }
 
-async function getPosts(baseUrl, param) {
-  const URL = `${baseUrl}search?q=${param.query}&restrict_sr=1`;
+async function getPosts(baseUrl, params) {
+  const URL = `${baseUrl}search?q=${params.query}&restrict_sr=1`;
   return await axios.get(URL)
     .then(html => {
-      return parsePosts(html.data, param);
+      return parsePosts(html.data, params);
     })
     .catch(err => console.log(err))
 }
 
-function parsePosts(html, param) {
+function parsePosts(html, params) {
   const postsObject = {};
+  const { queryObject } = params
   const $ = cheerio.load(html);
   $('div[data-click-id="body"]').each((index, post) => {
       let partialPath = $(post).find('a[data-click-id="body"]').attr('href')
@@ -75,21 +79,32 @@ function parsePosts(html, param) {
       let div = $(post).children('div').toArray()[1]
       let timestamp = $(div).find('a[data-click-id="timestamp"]').text()
       let commentCount = $(post).find('.icon-comment').siblings('span').text()
-      let upvotes = $(post).find('button.voteButton').siblings('div').text();
+      // let upvotes = $(post).find('button.voteButton').siblings('div').text();
+      let upvotes = $(post).find("button[aria-label='upvote']").siblings('div').text();
       postsObject[id] = {
         title: rawTitle[0],
-        subredditId: param.id,
+        localId: id,
+        subredditId: params.subredditObject.id,
         url: path,
         postTimeStamp: timestamp,
         upvotes: parseUpvotes(upvotes),
-        commentCount: parseCommentNumber(commentCount)
+        commentCount: parseCommentNumber(commentCount),
+        queries: params.queryObject.id
       }
+      Post.findOneAndUpdate({localId: id}, postsObject[id], {upsert: true}).exec()
+        .then( post => {
+          queryObject.update({$push: { posts: post.id }})
+          console.log('post updated')
+          console.log(post)
+        }).catch(err => console.log(err))
+      
     }
   );
-  return postsObject
+  return queryObject
 }
 
 function parseUpvotes(string) {
+  if (string = '') return 0
   let abbreviation = string.slice(-1)
   const abbreviations = { k:1000, m:1000000 }
   if(Object.keys(abbreviations).includes(abbreviation)) {
@@ -100,13 +115,16 @@ function parseUpvotes(string) {
 }
 
 function parseCommentNumber(string) {
+  if( string === '' ) return 0
   return parseInt(string.split(' ')[0])
 }
 
-let testObject = {
-  subreddits: ["608854c13220ea9cd552648c"],
-  id: "608880b7fae938a54c30cd4c",
-  query: "crypto",
-};
+module.exports = constructPostsBySubreddit
 
-return subredditIterator(testObject);
+// let testObject = {
+//   subreddits: ["608854c13220ea9cd552648c"],
+//   id: "608880b7fae938a54c30cd4c",
+//   query: "crypto",
+// };
+
+// return subredditIterator(testObject);

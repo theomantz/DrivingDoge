@@ -19,9 +19,21 @@ const CommentSchema = new Schema(
       type: Number,
       required: true
     },
+    downvotes: {
+      type: Number,
+      required: true
+    },
+    unvoted: {
+      type: Number,
+      required: true
+    },
     commentTimeStamp: {
       type: String,
       required: false
+    },
+    commentText: {
+      type: String,
+      required: true
     },
     queryParams: {
       type: [String],

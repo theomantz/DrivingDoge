@@ -7,6 +7,8 @@ const scrapers = require('./routes/api/scrapers');
 
 // Scraper utilities
 const getSubreddits = require('./web_scrapers/subredditScraper')
+const constructPostsBySubreddit = require('./web_scrapers/postScraper')
+
 
 // Mongoose models
 const Subreddit = require('./models/Subreddit');
@@ -85,9 +87,23 @@ app.get("/query/:query", (req, res) => {
           .catch((err) => console.log(err));
           queryObject.save()
             .then( queryObject => {
-              res.status(200).json(queryObject)
+              constructPostsBySubreddit(queryObject)
+                .then( object => res.status(200).json(object) )
+              
             })
     })
+})
+
+app.get('/query2/:subredditId', async (req, res) => {
+  let testObject = {
+    subreddits: ["608854c13220ea9cd552648c"],
+    id: "608880b7fae938a54c30cd4c",
+    query: "crypto",
+  }
+  const postsObject = constructPostsBySubreddit(testObject)
+
+  console.log(postsObject)
+    // .then(postsObject => console.log(postsObject))
 })
 
 const PORT = process.env.PORT || 5000;

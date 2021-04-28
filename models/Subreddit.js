@@ -15,10 +15,10 @@ const SubredditSchema = new Schema(
       type: Number,
       required: false
     },
-    queries: {
-      type: [mongoose.Schema.Types.ObjectId],
-      required: true
-    }
+    queries: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Query"
+    }]
   },
   {
     timestamps: true

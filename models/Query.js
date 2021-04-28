@@ -19,7 +19,7 @@ const QuerySchema = new Schema(
         ref: "Post"
       }]
     },
-    Comments: {
+    comments: {
       type: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment"
