@@ -11,6 +11,10 @@ const PostSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Subreddit",
     },
+    url: {
+      type: String,
+      required: true
+    },
     author: {
       type: String,
       required: true,
@@ -22,6 +26,14 @@ const PostSchema = new Schema(
     postTimeStamp: {
       type: String,
       required: false,
+    },
+    commentCount: {
+      type: Number,
+      required: true
+    },
+    comments: {
+      type: Schema.Types.ObjectId,
+      ref: "Comment"
     },
     queryParams: {
       type: [String],

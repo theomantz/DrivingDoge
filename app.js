@@ -74,6 +74,7 @@ app.get("/query/:query", (req, res) => {
                   upsert: true,
                 }
               ).then((subredditModelObject) =>{
+                console.log(subredditModelObject)
                 subredditModelObject.save()
                   .then(object => queryObject.updateOne( 
                     {$push:{ subreddits: object.id }}
@@ -83,7 +84,9 @@ app.get("/query/:query", (req, res) => {
           })
           .catch((err) => console.log(err));
           queryObject.save()
-            .then( queryObject => res.status(200).json(queryObject) )
+            .then( queryObject => {
+              res.status(200).json(queryObject)
+            })
     })
 })
 
