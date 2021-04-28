@@ -1,15 +1,17 @@
 const tf = require('@tensorflow/tfjs')
 const axios = require('axios')
+const { v4: uuidv4 } = require('uuid')
 
-const HOSTED_urls = {
+const HostedUrls = {
   model:
     "https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/model.json",
   metadata:
     "https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/metadata.json",
 };
 
-const LOCAL_urls = {
-  
+const LocalUrls = {
+  model: "./resources/model.json",
+  metadata: "./resources/metadata.json",
 }
 
 const SentimentRange = {
@@ -20,6 +22,19 @@ const SentimentRange = {
 
 let model
 let metadata
+let urls
+
+const PadIndex = 0;
+let OOVIndex = uuidv4();
+
+function initialize() {
+  if(window.location.hostname === 'localhost') {
+    urls = LocalUrls
+  } else {
+    urls = HostedUrls
+  }
+}
+
 
 async function setupTfModels() {
   if(typeof model === 'undefined') {
@@ -46,4 +61,12 @@ async function loadMetaData(url) {
   } catch (err) { 
     console.log(err)
   }
-} 
+}
+
+function assignSentimentScore(text) {
+  const inputTextArray = text
+    .trim()
+    .toLowerCase()
+    .replace(/(\.|\,|\!)/g, "")
+    .split(" ");
+}
