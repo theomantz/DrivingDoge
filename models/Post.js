@@ -43,9 +43,13 @@ const PostSchema = new Schema(
       type: Number,
       required: true
     },
-    comments: {
+    comments: [{
       type: Schema.Types.ObjectId,
       ref: "Comment"
+    }],
+    averageScore: {
+      type: Number,
+      required: false
     },
     queries: [{
       type: mongoose.Schema.Types.ObjectId,

@@ -3,6 +3,7 @@ const cheerio = require('cheerio');
 const Query = require('../models/Query');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
+const processRedditPosts = require('../tensorflow/model')
 
 function constructCommentsByPost(queryObject) {
   const postIds = queryObject.posts;
@@ -30,7 +31,7 @@ async function getComments(postObject, queryObject) {
 }
 
 function parseComment(html, postObject = null, queryObject = null) {
-  const commentObject = {}
+  const parentCommentObject = {}
   const $ = cheerio.load(html)
   const postComment = $('div#siteTable').children('div.thing')
 
@@ -45,40 +46,50 @@ function parseComment(html, postObject = null, queryObject = null) {
     commentCount: parseInt($(postComment).attr('data-comments-count')),
   }
 
-  console.log(updatedPost)
-
-  $(html).find("div.thing.comment").each((index, comment) => {
-      console.log(comment);
-      // Parent comment object construction
-      const parent = $(comment).find('p.parent').siblings('div.entry.unvoted')
-      const cheerioTextNodes = $(parent)
-        .find('div.usertext-body > div.md')
-        .children('p')
-      const parentCommentObject = {
-        postId: updatedPost.id,
-        author: $(parent).find('a.author.may-blank').text(),
-        upvotes: parseVotes($(parent).find('span.score.likes')).text(),
-        downvotes: parseVotes($(parent).find('span.score.dislikes')).text(),
-        unvoted: parseVotes($(parent).find('span.score.unvoted')).text(),
-        commentTimeStamp: $(parent).find('p.tagline > time').attr('datetime'),
-        commentText: parseText(cheerioTextNodes)
-      }
-
-      const parentCommentDoc = new Comment(parentCommentObject)
-      parentCommentDoc.save()
-        .then(parentCommentDoc => {
-
-          console.log(parentCommentDoc)
-          
-          
-        })
-
-    });
   
-  // postObject.update(updatedPost).exec()
-  //   .then(postObject => {
+    
+  
+  
+  $(html).find("div.sitetable.nestedlisting > div.thing.comment")
+    .each((index, topLevelComment) => {
 
-  //   })
+
+      
+      // Parent topLevelComment object construction
+      const parent = $(topLevelComment)
+      .find('p.parent')
+      .siblings('div.entry.unvoted').each( (i, comment) => {
+              const cheerioTextNodes = $(comment)
+                .find("div.usertext-body > div.md")
+                .children("p")
+                .text();
+              const parentCommentObject = {
+                postId: updatedPost.id,
+                author: $(comment).find("a.author.may-blank").text(),
+                upvotes: parseVotes($(comment).find("span.score.likes").text()),
+                downvotes: parseVotes(
+                  $(comment).find("span.score.dislikes").text()
+                ),
+                unvoted: parseVotes(
+                  $(comment).find("span.score.unvoted").text()
+                ),
+                timestamp: $(comment)
+                  .find("p.tagline > time")
+                  .attr("datetime"),
+                text: cheerioTextNodes,
+                query: queryObject.id
+              };
+              console.log(parentCommentObject)
+              const parentCommentDoc = new Comment(parentCommentObject)
+              parentCommentDoc.save()
+                .then(parentCommentDoc => {
+                  commentIds.push(parentCommentDoc.id)
+                }).catch(err => console.log(err))
+      })
+    });
+    updatedPost.comments = commentIds
+    let postObject = await postObject.update(updatedPost).exec()
+    return await processRedditPosts(postObject)
 }
 
 function parseTimestamp(timestamp) {
@@ -99,10 +110,12 @@ function parseVotes(string) {
 }
 
 function parseText(cheerioObject) {
+  console.log(typeof cheerioObject)
   let userText = ''
-  $(cheerioObject).each( pElement => {
-    
+  $(cheerioObject).each( function() {
+    userText += $(this).text()
   })
+  return userText
 }
 
 return getComments(null, null)

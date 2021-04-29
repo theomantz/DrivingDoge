@@ -40,6 +40,7 @@
     "firebase-admin": "^9.6.0",
     "moment": "^2.29.1",
     "mongoose": "^5.12.5",
+    "spellchecker": "^3.7.1",
     "uuid": "^8.3.2",
     "validator": "^13.6.0",
     "webpack-cli": "^4.6.0",

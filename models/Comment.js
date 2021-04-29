@@ -7,10 +7,6 @@ const CommentSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId, 
       ref: "Post" 
     },
-    test: {
-      type: String,
-      required: true
-    },
     author: {
       type: String,
       required: true
@@ -27,13 +23,21 @@ const CommentSchema = new Schema(
       type: Number,
       required: true
     },
-    commentTimeStamp: {
+    timestamp: {
       type: String,
       required: false
     },
-    commentText: {
+    text: {
       type: String,
       required: true
+    },
+    sentimentScore: {
+      type: Number,
+      required: false
+    },
+    commentSentiment: {
+      type: String,
+      required: false
     },
     queryParams: {
       type: [String],
@@ -44,3 +48,5 @@ const CommentSchema = new Schema(
     timestamps: true
   }
 )
+
+module.exports = Comment = mongoose.model("Comment", CommentSchema)
