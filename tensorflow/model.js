@@ -1,12 +1,11 @@
 const tf = require('@tensorflow/tfjs')
 const axios = require('axios')
 const { v4: uuidv4 } = require('uuid')
-const spellChecker = require('spellchecker')
+const SpellChecker = require('spellchecker')
 const Comment = require('../models/Comment')
 const Post = require('../models/Post')
 const Query = require('../models/Query')
 const Subreddit = require('../models/Subreddit')
-const { ModuleFilenameHelpers } = require('webpack')
 
 
 const HostedUrls = {
@@ -98,8 +97,8 @@ function assignSentimentScore(text) {
     .replace(/(\.|\,|\!)/g, "")
     .split(" ");
   const indexSequence = inputTextArray.map(word => {
-    let word = normalizeWords(word)
-    let wordIndex = metadata.word_index[word] + metadata.index_from
+    let normalWord = normalizeWords(word)
+    let wordIndex = metadata.word_index[normalWord] + metadata.index_from
     if( wordIndex > metadata.vocabulary_size ) {
       wordIndex = OOVIndex
     }
@@ -130,7 +129,7 @@ function processRedditPosts(postObject) {
     let commentScoreSum = 0
     const comments = postObject.comments
     comments.each(id => {
-      const comment = await Comment.findById(id).exec()
+      const comment = Comment.findById(id).exec()
       const commentText = comment.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
       const sentimentScore = assignSentimentScore(commentText);
       commentScoreSum += sentimentScore
@@ -149,7 +148,7 @@ function processRedditPosts(postObject) {
         .catch(err => console.log(err))
     })
     const averageScore = toFixed(commentScoreSum / comments.length)
-    let postObject = await postObject.update({averageScore: averageScore}).exec()
+    let postObject = postObject.update({averageScore: averageScore}).exec()
     return postObject
   })
 }

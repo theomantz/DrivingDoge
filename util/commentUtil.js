@@ -17,13 +17,14 @@ function constructCommentsByPost(queryObject) {
       }
     })
   }
+  return queryObject
 }
 
 async function getComments(postObject, queryObject) {
-  // const { url } = postObject
-  // const oldRedditUrl = "https://old." + url.split("https://www.")[1];
+  const { url } = postObject
+  const oldRedditUrl = "https://old." + url.split("https://www.")[1];
   // texting url:
-  const oldRedditUrl = "https://old.reddit.com/r/litecoin/comments/muhe5j/crypto_is_officially_halal_i_went_to_my_favorite/"
+  // const oldRedditUrl = "https://old.reddit.com/r/litecoin/comments/muhe5j/crypto_is_officially_halal_i_went_to_my_favorite/"
   return await axios.get(oldRedditUrl)
     .then(html => {
       return parseComment(html.data, postObject, queryObject)
@@ -88,8 +89,8 @@ function parseComment(html, postObject = null, queryObject = null) {
       })
     });
     updatedPost.comments = commentIds
-    let postObject = await postObject.update(updatedPost).exec()
-    return await processRedditPosts(postObject)
+    let updatedPostObject = postObject.update(updatedPost).exec()
+    return processRedditPosts(updatedPostObject)
 }
 
 function parseTimestamp(timestamp) {
@@ -118,4 +119,4 @@ function parseText(cheerioObject) {
   return userText
 }
 
-return getComments(null, null)
+module.exports = constructCommentsByPost;

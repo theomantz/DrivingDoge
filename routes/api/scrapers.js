@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router();
-const getSubreddits = require("../../web_scrapers/subredditScraper");
+const getSubreddits = require("../../util/subredditUtil");
 
 
 

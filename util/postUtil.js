@@ -4,7 +4,9 @@ const Query = require('../models/Query')
 const Post = require('../models/Post');
 const Subreddit = require('../models/Subreddit');
 
-const queryObject = {
+// Sample queryObject
+
+/* const testingQueryObject = {
   subreddits: [
     "608854c13220ea9cd552648c",
     "608854c13220ea9cd5526481",
@@ -37,38 +39,56 @@ const queryObject = {
   _id: "608880b7fae938a54c30cd4c",
   query: "crypto",
   __v: 0,
-};
+}; */
 
 
 function constructPostsBySubreddit(queryObject) {
   const subredditIds = queryObject.subreddits
+  const promises = []
   for (const id of subredditIds) {
-    Subreddit.findById(id, (err, subredditObject) => {
-      const { longLink } = subredditObject
-      // console.log(subredditObject)
-      getPosts(longLink, {
-        query: queryObject.query, 
-        subredditObject: subredditObject,
-        queryObject: queryObject
-      })
-    })
+    let promise = Subreddit.findById(id, function(err, subredditObject) {
+
+      if(err) {
+        
+        console.log(err)
+
+      } else if(!subredditObject) {
+        console.log(subredditObject)
+      } else {
+
+        const { longLink } = subredditObject
+        // console.log(subredditObject)
+        let promise = getPosts(longLink, {
+          query: queryObject.query, 
+          subredditObject: subredditObject,
+          queryObject: queryObject
+        })
+      }
+    }).exec()
+    promises.push(promise)
   }
-  const updatedQuery = Query.findById(queryObject.id).exec()
-  return updatedQuery
+  // console.log('returning queryObject from posts')
+  // const updatedQuery = Query.findById(queryObject.id).exec()
+  return Promise.allSettled(promises)
+    .then(() => console.log('all posts updated'))
+    .catch(err => console.log(err))
 }
 
 async function getPosts(baseUrl, params) {
   const URL = `${baseUrl}search?q=${params.query}&restrict_sr=1`;
   return await axios.get(URL)
-    .then(html => {
-      return parsePosts(html.data, params);
+    .then(async function(html) {
+      let result = await parsePosts(html.data, params);
+      console.log(`posts returned from parsePosts`)
+      return result
     })
     .catch(err => console.log(err))
 }
 
 function parsePosts(html, params) {
   const postsObject = {};
-  const { queryObject } = params
+  const { queryObject, subredditObject } = params
+  const promises = [];
   const $ = cheerio.load(html);
   $('div[data-click-id="body"]').each((index, post) => {
       let partialPath = $(post).find('a[data-click-id="body"]').attr('href')
@@ -91,20 +111,23 @@ function parsePosts(html, params) {
         commentCount: parseCommentNumber(commentCount),
         queries: params.queryObject.id
       }
-      Post.findOneAndUpdate({localId: id}, postsObject[id], {upsert: true}).exec()
-        .then( post => {
-          queryObject.update({$push: { posts: post.id }})
-          console.log('post updated')
-          console.log(post)
+      let promise = Post.findOneAndUpdate({localId: id}, postsObject[id], {upsert: true}).exec()
+        .then( postObject => {
+          queryObject.update({$push: { posts: postObject.id }})
+          subredditObject.update({$push: {posts: postObject.id }})
+          console.log('postObject updated')
         }).catch(err => console.log(err))
-      
+        promises.push(promise)
     }
   );
-  return queryObject
+  return Promise.allSettled(promises)
+    .then(() => {
+      console.log('posts saved')
+    }).catch(err => console.log(err))
 }
 
 function parseUpvotes(string) {
-  if (string = '') return 0
+  if (string === '') return 0
   let abbreviation = string.slice(-1)
   const abbreviations = { k:1000, m:1000000 }
   if(Object.keys(abbreviations).includes(abbreviation)) {
@@ -121,10 +144,3 @@ function parseCommentNumber(string) {
 
 module.exports = constructPostsBySubreddit
 
-// let testObject = {
-//   subreddits: ["608854c13220ea9cd552648c"],
-//   id: "608880b7fae938a54c30cd4c",
-//   query: "crypto",
-// };
-
-// return subredditIterator(testObject);
