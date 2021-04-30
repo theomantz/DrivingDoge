@@ -73,12 +73,10 @@ app.get("/query/:query", async (req, res) => {
 
   constructSubredditsByQuery(queryObject).then(obj => {
       constructPostsBySubreddit(obj).then(obj => {
-        Query.findById(queryObject.id).then(obj => {
           constructCommentsByPost(obj).then(obj => {
             res.status(200).json('query complete')
           }).catch(err => console.log(err))
-        }).catch(err => console.log(err))
-    }).catch(err => console.log(err))
+      }).catch(err => console.log(err))
   }).catch(err => console.log(err))
   
 })

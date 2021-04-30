@@ -130,12 +130,6 @@ async function saveObjects(post, sub, query) {
 
     return postDoc
 
-    // let subDoc = await sub.posts.push(postDoc.id)
-    
-    // let queryDoc = await query.posts.push(postDoc.id)
-    
-    // return queryDoc
-
   } catch(err) {
     
     console.log(err)
