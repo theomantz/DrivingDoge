@@ -4,71 +4,38 @@ const Query = require('../models/Query')
 const Post = require('../models/Post');
 const Subreddit = require('../models/Subreddit');
 
-// Sample queryObject
 
-/* const testingQueryObject = {
-  subreddits: [
-    "608854c13220ea9cd552648c",
-    "608854c13220ea9cd5526481",
-    "608854c13220ea9cd55264b2",
-    "608854c13220ea9cd5526499",
-    "608854c13220ea9cd55264bf",
-    "608854c13220ea9cd55264c6",
-    "608854c13220ea9cd55264eb",
-    "608854c13220ea9cd552650f",
-    "608854c13220ea9cd5526509",
-    "608854c13220ea9cd5526505",
-    "608854c13220ea9cd55264e5",
-    "608854c13220ea9cd552651f",
-    "608854c13220ea9cd5526501",
-    "608854c13220ea9cd552650a",
-    "608854c13220ea9cd55264d9",
-    "608854c13220ea9cd5526531",
-    "608854c13220ea9cd5526536",
-    "608854c13220ea9cd552651e",
-    "608854c13220ea9cd552655a",
-    "608854c13220ea9cd5526560",
-    "608854c13220ea9cd5526547",
-    "608854c13220ea9cd5526555",
-    "608854c13220ea9cd5526554",
-    "608854c13220ea9cd5526568",
-    "608854c13220ea9cd552656a",
-  ],
-  posts: [],
-  Comments: [],
-  _id: "608880b7fae938a54c30cd4c",
-  query: "crypto",
-  __v: 0,
-}; */
+async function constructPostsBySubreddit(queryObject) {
 
-
-function constructPostsBySubreddit(queryObject) {
   const subredditIds = queryObject.subreddits
+  
   const promises = []
+
   for (const id of subredditIds) {
-    let promise = Subreddit.findById(id, async function(err, subredditObject) {
 
-      if(err) {
-        
-        console.log(err)
-
-      } else if(!subredditObject) {
-        console.log(subredditObject)
-      } else {
-
-        const { longLink } = subredditObject
-        // console.log(subredditObject)
-        return await getPosts(longLink, {
+    try {
+      
+      const subredditObject = await Subreddit.findById(id)
+      
+      const { longLink } = subredditObject
+      
+      const buildPosts = await getPosts(longLink, {
           query: queryObject.query, 
           subredditObject: subredditObject,
           queryObject: queryObject
         })
-      }
-    }).exec()
-    promises.push(promise)
+
+      promises.push(buildPosts)
+
+    } catch (err) {
+      
+      console.log(err)
+      
+    }
+
+
   }
-  // console.log('returning queryObject from posts')
-  // const updatedQuery = Query.findById(queryObject.id).exec()
+
   return Promise.allSettled(promises)
     .then(() => {
       return console.log('all posts updated')
@@ -80,15 +47,18 @@ function constructPostsBySubreddit(queryObject) {
 
 async function getPosts(baseUrl, params) {
   const URL = `${baseUrl}search?q=${params.query}&restrict_sr=1`;
-  return await axios.get(URL)
-    .then(async function(html) {
-      let result = await parsePosts(html.data, params);
-      console.log(`posts returned from parsePosts`)
-      return result
-    })
-    .catch(err => {
-      return console.log(err)
-    })
+
+  try {
+
+    const html = await axios.get(URL)
+    const result = await parsePosts(html.data, params)
+    return result
+    
+  } catch (err) {
+    
+    console.log(err)
+
+  }
 }
 
 function parsePosts(html, params) {

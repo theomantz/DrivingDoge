@@ -8,12 +8,13 @@ function constructSubredditsByQuery(queryDoc) {
 }
 
 async function getSubreddits(queryDoc) {
-  const { query } = queryDoc.query
+  const { query } = queryDoc
   const URL = `https://www.reddit.com/search?q=${query}&type=sr%2Cuser`;
   try {
     
     const html = await axios.get(URL)
-    const queryObj = await parseSubreddits(html.data, queryDoc)
+    await parseSubreddits(html.data, queryDoc)
+    const queryObj = await Query.findById(queryDoc.id)
     return queryObj
     
   } catch(err) {
@@ -21,29 +22,18 @@ async function getSubreddits(queryDoc) {
     console.log(err)
 
   }
-    // .then(async function(html) {
-    //   console.log('received valid HTML')
-    //   console.log(`object returned from parser in getSub call${queryObj}`)
-    //   return queryObj
-    // })
-    // .catch(error => {
-    //   return console.log(error)
-    // })
 };
 
 
 
-async function parseSubreddits(html, queryObj) {
+function parseSubreddits(html, queryObj) {
 
-  // const subRedditObjects = {};
-  const subredditIds = [];
   const promises = [];
   
   
   
   const $ = cheerio.load(html);
 
-  let length = 0
 
   $("div.ListingLayout-outerContainer div > a")
     .each((index, element) => {
@@ -53,9 +43,7 @@ async function parseSubreddits(html, queryObj) {
         const subCountString = $(element).find("div > div > div").last().text();
         const subCount = parseSubCount(subCountString)
         const descriptionNode = $(element).children('div').toArray()[1]
-        
         try {
-          
           const subredditDoc = Subreddit.findOneAndUpdate(
             {
               shortLink: shortLink
@@ -72,7 +60,8 @@ async function parseSubreddits(html, queryObj) {
             }
             ).exec();
 
-            queryDoc = Query.findOneAndUpdate(
+            promises.push(subredditDoc)
+          const queryDoc = Query.findOneAndUpdate(
               {
                 id: queryObj.id
               },
@@ -83,50 +72,34 @@ async function parseSubreddits(html, queryObj) {
                 new: true
               }
             ).then(doc => doc);
+
+            promises.push(queryDoc)
             
           } catch (err) {
-
+            
             console.log(err)
-
+            
           }
-          length += 1
-          console.log(length)
-          return promises.push(queryDoc)
+          
+
+          return promises
     }
   })
 
-  // let queryObj = queryDoc.update({id: queryDoc.id}, {$push: {subreddits: subredditIds}})
-  //       .then(doc => {
-  //         console.log(typeof doc)
-  //         console.log(doc.subreddits)
-  //         console.log('returning queryDoc from subreddits')
-  //         return doc
-  //       })
-  //       .catch(err => console.log(err))
-
-  //       promises.push(queryObj)
-
-  // let fulfilled = Promise.allSettled(promises)
-  //   .then(() => {
-  //         return queryObj
-  //       })
-  //       .catch(err => console.log(err))
- 
-  // console.log(`returning promise from subreddit parser ${fulfilled}`)
-
-  // return await Promise.allSettled(promises).then()
-  if(promises.length > 1) {
     return Promise.allSettled(promises)
       .then(doc => doc)
       .catch(err => console.log(err))
-  }
 }
 
 function parseSubCount(string) {
+  
   const stringArray = string.split(' ');
+  
   if( stringArray.length === 1 ) return null;
+  
   const number = stringArray[0]
   const multipliers = { k: 1000, m: 1000000 }
+
   return parseFloat(number.slice(0, -1)) * multipliers[number.slice(-1)]
 }
 
