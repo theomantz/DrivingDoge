@@ -19,14 +19,14 @@ const SubredditSchema = new Schema(
       type: String,
       required: false
     },
-    posts: {
+    posts: [{
       type: Schema.Types.ObjectId,
       ref: "Post"
-    },
-    comments: {
+    }],
+    comments: [{
       type: Schema.Types.ObjectId,
       ref: 'Comment'
-    },
+    }],
     queries: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Query"

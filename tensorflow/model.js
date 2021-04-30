@@ -8,6 +8,7 @@ const Query = require('../models/Query')
 const Subreddit = require('../models/Subreddit')
 
 
+
 const HostedUrls = {
   model:
     "https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/model.json",
@@ -15,10 +16,10 @@ const HostedUrls = {
     "https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/metadata.json",
 };
 
-const LocalUrls = {
-  model: "./resources/model.json",
-  metadata: "./resources/metadata.json",
-}
+// const LocalUrls = {
+//   model: "./resources/model.json",
+//   metadata: "./resources/metadata.json",
+// }
 
 const SentimentRange = {
   positive: 0.66,
@@ -34,20 +35,22 @@ const PadIndex = 0;
 let OOVIndex = uuidv4();
 
 function initialize() {
-  if(window.location.hostname === 'localhost') {
-    urls = LocalUrls
-  } else {
-    urls = HostedUrls
-  }
+  // if(typeof window === 'undefined') {
+  //   urls = require('../config/urls');
+  // } else if(window.location.hostname === 'localhost') {
+  //   urls = require("../config/urls");
+  // } else {
+  //   urls = HostedUrls
+  // }
 }
 
 
 async function setupTfModels() {
   if(typeof model === 'undefined') {
-    model = await loadModel(urls.model)
+    model = await loadModel(HostedUrls.model)
   }
   if(typeof metadata === 'undefined') {
-    metadata = await loadMetaData(urls.metadata)
+    metadata = await loadMetaData(HostedUrls.metadata)
   }
 }
 
@@ -123,13 +126,16 @@ function normalizeWords(word) {
   return options.length === 0 ? word : options[0]
 }
 
-function processRedditPosts(postObject) {
+async function processRedditPosts(postObject) {
   initialize()
-  setupTfModels().then(() => {
+  const promises = [];
+  const comments = await postObject.comments
+  if(!comments) return console.log('no comments')
+  setupTfModels().then(async function(model, postObject) {
     let commentScoreSum = 0
     const comments = postObject.comments
-    comments.each(id => {
-      const comment = Comment.findById(id).exec()
+    comments.each(async function(id) {
+      const comment = await Comment.findById(id).exec()
       const commentText = comment.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
       const sentimentScore = assignSentimentScore(commentText);
       commentScoreSum += sentimentScore
@@ -141,14 +147,14 @@ function processRedditPosts(postObject) {
       } else {
         commentSentiment = 'negative'
       }
-      comment.update({
+      await comment.update({
         sentimentScore: sentimentScore, 
         commentSentiment: commentSentiment})
         .then(() => console.log('comment updated with sentiment score'))
         .catch(err => console.log(err))
     })
     const averageScore = toFixed(commentScoreSum / comments.length)
-    let postObject = postObject.update({averageScore: averageScore}).exec()
+    let updatedPostObject = await postObject.update({averageScore: averageScore}).exec()
     return postObject
   })
 }

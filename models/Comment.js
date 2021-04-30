@@ -9,7 +9,15 @@ const CommentSchema = new Schema(
     },
     author: {
       type: String,
-      required: true
+      required: false
+    },
+    authorId: {
+      type: String,
+      required: false
+    },
+    commentId: {
+      type: String,
+      required: false
     },
     upvotes: {
       type: Number,

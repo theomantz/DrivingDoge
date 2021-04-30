@@ -7,17 +7,25 @@ const processRedditPosts = require('../tensorflow/model')
 
 function constructCommentsByPost(queryObject) {
   const postIds = queryObject.posts;
+  const promises = [];
   for(const id of postIds) {
-    Post.findById(id, (err, postObject) => {
+    let promise = Post.findById(id, async function(err, postObject) {
       // get comments
       if(postObject) {
-        getComments(postObject, queryObject)
+        return await getComments(postObject, queryObject)
       } else if (err) {
-        console.log(err)
+        return console.log(err)
       }
     })
+    promises.push(promise)
   }
-  return queryObject
+  return Promise.allSettled(promises)
+    .then(() => {
+      return console.log('Comments updated')
+    })
+    .catch(err => {
+      return console.log(err)
+    })
 }
 
 async function getComments(postObject, queryObject) {
@@ -26,13 +34,12 @@ async function getComments(postObject, queryObject) {
   // texting url:
   // const oldRedditUrl = "https://old.reddit.com/r/litecoin/comments/muhe5j/crypto_is_officially_halal_i_went_to_my_favorite/"
   return await axios.get(oldRedditUrl)
-    .then(html => {
-      return parseComment(html.data, postObject, queryObject)
+    .then( async function(html) {
+      return await parseComment(html.data, postObject, queryObject)
     }).catch(err => console.log(err))
 }
 
 function parseComment(html, postObject = null, queryObject = null) {
-  const parentCommentObject = {}
   const $ = cheerio.load(html)
   const postComment = $('div#siteTable').children('div.thing')
 
@@ -46,11 +53,7 @@ function parseComment(html, postObject = null, queryObject = null) {
     upvotes: parseInt($(postComment).attr('data-score')),
     commentCount: parseInt($(postComment).attr('data-comments-count')),
   }
-
-  
-    
-  
-  
+  const promises = []
   $(html).find("div.sitetable.nestedlisting > div.thing.comment")
     .each((index, topLevelComment) => {
 
@@ -59,14 +62,26 @@ function parseComment(html, postObject = null, queryObject = null) {
       // Parent topLevelComment object construction
       const parent = $(topLevelComment)
       .find('p.parent')
-      .siblings('div.entry.unvoted').each( (i, comment) => {
+      .siblings('div.entry.unvoted').each( async function(i, comment) {
+              let authorIdString = $(comment).find('a.author.may-blank').attr('class')
+              if(!authorIdString) {
+                // console.log(authorIdString)
+                authorIdString = ''
+              }
+              const authorId = authorIdString.substring(
+                authorIdString.indexOf("id-")
+              );
+              const commentId = $(comment).find('form.usertext > input[name="thing_id"]').attr('value')
+              const localId = authorId.concat(commentId)
               const cheerioTextNodes = $(comment)
                 .find("div.usertext-body > div.md")
                 .children("p")
                 .text();
               const parentCommentObject = {
-                postId: updatedPost.id,
+                postId: postObject.id,
                 author: $(comment).find("a.author.may-blank").text(),
+                authorId: authorId,
+                commentId: commentId,
                 upvotes: parseVotes($(comment).find("span.score.likes").text()),
                 downvotes: parseVotes(
                   $(comment).find("span.score.dislikes").text()
@@ -80,17 +95,46 @@ function parseComment(html, postObject = null, queryObject = null) {
                 text: cheerioTextNodes,
                 query: queryObject.id
               };
-              console.log(parentCommentObject)
-              const parentCommentDoc = new Comment(parentCommentObject)
-              parentCommentDoc.save()
-                .then(parentCommentDoc => {
-                  commentIds.push(parentCommentDoc.id)
-                }).catch(err => console.log(err))
+              // console.log(parentCommentObject)
+              if(parentCommentObject.text) {
+                // console.log(parentCommentDoc)
+                const promise = Comment.findOneAndUpdate({})
+                //  const promise = Comment.findOneAndUpdate({
+                //    authorId: authorId, 
+                //    commentId: commentId
+                //   }, parentCommentObject, 
+                //    {upsert: true,
+                //     new: true}
+                //    )
+                //    .then(async function (parentCommentDoc) {
+                //      console.log(`comment added to post and query`);
+                //      return await Post.findOneAndUpdate(
+                //        { id: parentCommentDoc.postId },
+                //        { $push: { comments: parentCommentDoc.id } },
+                //        { new: true }
+                //      ).then(async function (updatedPost) {
+                //          return await Query.findOneAndUpdate(
+                //            { id: queryObject.id },
+                //            { $push: { comments: parentCommentDoc.id } }
+                //          ).then(() => console.log(`all updated`))
+                //           .catch((err) => console.log(err));
+                //        }).catch((err) => console.log(err));
+                //    }).catch((err) => console.log(err));
+                //  promises.push(promise);
+              }
       })
     });
-    updatedPost.comments = commentIds
-    let updatedPostObject = postObject.update(updatedPost).exec()
-    return processRedditPosts(updatedPostObject)
+    return Promise.allSettled(promises)
+    .then(async function() {
+        return await Post.findOneAndUpdate(
+          {id: postObject.id}, 
+          updatedPost, 
+          {new: true}
+          ).then( async (updatedPostObject) => {
+            const postObjects = await processRedditPosts(postObject)
+            console.log(postObjects)
+          }).catch(err => console.log(err))
+      }).catch(err => console.log(err))
 }
 
 function parseTimestamp(timestamp) {

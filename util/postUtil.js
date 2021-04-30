@@ -46,7 +46,7 @@ function constructPostsBySubreddit(queryObject) {
   const subredditIds = queryObject.subreddits
   const promises = []
   for (const id of subredditIds) {
-    let promise = Subreddit.findById(id, function(err, subredditObject) {
+    let promise = Subreddit.findById(id, async function(err, subredditObject) {
 
       if(err) {
         
@@ -58,7 +58,7 @@ function constructPostsBySubreddit(queryObject) {
 
         const { longLink } = subredditObject
         // console.log(subredditObject)
-        let promise = getPosts(longLink, {
+        return await getPosts(longLink, {
           query: queryObject.query, 
           subredditObject: subredditObject,
           queryObject: queryObject
@@ -70,8 +70,12 @@ function constructPostsBySubreddit(queryObject) {
   // console.log('returning queryObject from posts')
   // const updatedQuery = Query.findById(queryObject.id).exec()
   return Promise.allSettled(promises)
-    .then(() => console.log('all posts updated'))
-    .catch(err => console.log(err))
+    .then(() => {
+      return console.log('all posts updated')
+    })
+    .catch(err => {
+      return console.log(err)
+    })
 }
 
 async function getPosts(baseUrl, params) {
@@ -82,7 +86,9 @@ async function getPosts(baseUrl, params) {
       console.log(`posts returned from parsePosts`)
       return result
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      return console.log(err)
+    })
 }
 
 function parsePosts(html, params) {
@@ -111,11 +117,29 @@ function parsePosts(html, params) {
         commentCount: parseCommentNumber(commentCount),
         queries: params.queryObject.id
       }
-      let promise = Post.findOneAndUpdate({localId: id}, postsObject[id], {upsert: true}).exec()
-        .then( postObject => {
-          queryObject.update({$push: { posts: postObject.id }})
-          subredditObject.update({$push: {posts: postObject.id }})
-          console.log('postObject updated')
+      let promise = Post.findOneAndUpdate({localId: id}, postsObject[id], {upsert: true})
+        .then(async function(postObject) {
+          return await Query
+            .findOneAndUpdate(
+              {id: queryObject.id}, 
+              {$push: { posts: postObject.id }}, 
+              {new: true}
+            )
+            .then(async function(query) {
+              return await Subreddit
+                .findOneAndUpdate(
+                  {id: subredditObject.id},
+                  { $push: { posts: postObject.id } },
+                  { new: true }
+                )
+                .then((obj) => {
+                  console.log(`updated query ${query}`);
+                  console.log(`updated subobj ${obj}`);
+                  console.log("postObject updated");
+                })
+                .catch((err) => console.log(err));
+            }).catch(err => console.log(err))
+          
         }).catch(err => console.log(err))
         promises.push(promise)
     }

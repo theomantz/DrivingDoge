@@ -47,17 +47,17 @@ mongoose
 
 app.get("/query/:query", async (req, res) => {
   
-  console.log('request received')
+  
   
   const { errors, isValid, asset } = validateQueryInput(req.params.query);
   
-  console.log(`query params ${isValid}`)
+  
 
   if(!isValid) {
     return res.status(400).json(errors)
   }
 
-  console.log(asset)
+  
 
   let queryObject = await Query.findOne({query: asset}, async function(err, queryDoc) {
     if(err) {
@@ -69,79 +69,21 @@ app.get("/query/:query", async (req, res) => {
     }
   })
 
-  console.log(queryObject.query)
+  // console.log(queryObject.query)
 
-  let queryObjectSubreddits = constructSubredditsByQuery(queryObject).then(obj => {
+  constructSubredditsByQuery(queryObject).then(obj => {
     Query.findById(queryObject.id).then(obj => {
       console.log(obj)
       constructPostsBySubreddit(obj).then(obj => {
-        console.log(`returning object from construct posts ${obj}`)
-      })
+        Query.findById(queryObject.id).then(obj => {
+          constructCommentsByPost(obj).then(obj => {
+            res.status(200).json('query complete')
+          }).catch(err => console.log(err))
+        }).catch(err => console.log(err))
+      }).catch(err => console.log(err))
     }).catch(err => console.log(err))
-
   }).catch(err => console.log(err))
   
-  /* .then(doc => {
-    console.log('queryDoc received from subreddits')
-    console.log(doc)
-    return doc
-  }).catch(err => console.log(err)) */
-
-
-  // let queryObject = Query.findOne({query: asset})
-  //   .then(queryObject => {
-  //       if(!queryObject) {
-  //         console.log(`generating new query`)
-  //         newQuery = new Query({
-  //           query: asset
-  //         })
-  //         newQuery.save()
-  //         .then(query => {
-  //           console.log('query saved')
-  //           queryObject = query
-  //         })
-  //       }
-  //       getSubreddits(asset)
-  //         .then((subredditsObject) => {
-  //           Object.keys(subredditsObject).forEach((subreddit) => {
-  //             Subreddit.findOneAndUpdate(
-  //               {
-  //                 shortLink: subredditsObject[subreddit].shortLink,
-  //               },
-  //               {
-  //                 longLink: subredditsObject[subreddit].link,
-  //                 subCount: subredditsObject[subreddit].subCount,
-  //                 $push: {
-  //                   queries: queryObject.id,
-  //                 },
-  //               },
-  //               {
-  //                 upsert: true,
-  //               }
-  //             ).then((subredditModelObject) =>{
-  //               console.log(subredditModelObject)
-  //               subredditModelObject.save()
-  //                 .then(object => queryObject.updateOne( 
-  //                   {$push:{ subreddits: object.id }}
-  //               ))
-  //             });
-  //           });
-  //         })
-  //         .catch((err) => console.log(err));
-  //         queryObject.save()
-  //           .then( queryObject => {
-  //             constructPostsBySubreddit(queryObject)
-  //               .then( queryObject => {
-  //                 console.log('passing query to comments')
-  //                 constructCommentsByPost(queryObject)
-  //                   .then( queryObject => {
-  //                     console.log('sending query response')
-  //                     res.status(200).json(queryObject) 
-  //                   })
-  //                 }
-  //               ) 
-  //           })
-  //   })
 })
 
 app.get('/query2/:subredditId', async (req, res) => {
