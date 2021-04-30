@@ -1,6 +1,7 @@
-const tf = require('@tensorflow/tfjs')
+const tf = require('@tensorflow/tfjs-node')
 const axios = require('axios')
 const { v4: uuidv4 } = require('uuid')
+
 const SpellChecker = require('spellchecker')
 const Comment = require('../models/Comment')
 const Post = require('../models/Post')
@@ -126,37 +127,73 @@ function normalizeWords(word) {
   return options.length === 0 ? word : options[0]
 }
 
-async function processRedditPosts(postObject) {
+function processRedditPosts(postObject) {
+  
   initialize()
   const promises = [];
-  const comments = await postObject.comments
+  const comments = postObject.comments
   if(!comments) return console.log('no comments')
-  setupTfModels().then(async function(model, postObject) {
+  
+  setupTfModels().then( async (model, postObject) => {
+
     let commentScoreSum = 0
-    const comments = postObject.comments
-    comments.each(async function(id) {
-      const comment = await Comment.findById(id).exec()
-      const commentText = comment.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
-      const sentimentScore = assignSentimentScore(commentText);
-      commentScoreSum += sentimentScore
-      let commentSentiment = ''
-      if( sentimentScore > SentimentRange.positive ) {
-        commentSentiment = 'positive'
-      } else if ( sentimentScore > SentimentRange.neutral ) {
-        commentSentiment = 'neutral'
-      } else {
-        commentSentiment = 'negative'
+    
+    for(const id of comments) {
+
+      try {
+
+        const comment = await Comment.findById(id).exec()
+
+        console.log(id)
+        console.log(comment)
+        
+        const commentText = comment.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
+        
+        const sentimentScore = assignSentimentScore(commentText);
+
+        commentScoreSum += sentimentScore
+        
+        let commentSentiment = ''
+        
+        if( sentimentScore > SentimentRange.positive ) {
+          commentSentiment = 'positive'
+        } else if ( sentimentScore > SentimentRange.neutral ) {
+          commentSentiment = 'neutral'
+        } else {
+          commentSentiment = 'negative'
+        }
+
+        comment.sentimentScore = sentimentScore
+        comment.commentSentiment = commentSentiment
+
+        let promise = comment.save()
+        promises.push(promise)
+        
+      } catch (err) {
+
+        console.log(err)
+        
       }
-      await comment.update({
-        sentimentScore: sentimentScore, 
-        commentSentiment: commentSentiment})
-        .then(() => console.log('comment updated with sentiment score'))
-        .catch(err => console.log(err))
+
+      
+    //   await comment.update({
+    //     sentimentScore: sentimentScore, 
+    //     commentSentiment: commentSentiment})
+    //     .then(() => console.log('comment updated with sentiment score'))
+    //     .catch(err => console.log(err))
+    }
+
+    return Promise.all(promises).then(() => {
+      const averageScore = toFixed(commentScoreSum / comments.length)
+      postObject.averageScore = averageScore
+      postObject.save().then(() => {
+        return postObject
+      })
     })
-    const averageScore = toFixed(commentScoreSum / comments.length)
-    let updatedPostObject = await postObject.update({averageScore: averageScore}).exec()
-    return postObject
   })
+
+
+  
 }
 
 module.exports = processRedditPosts

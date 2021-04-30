@@ -44,6 +44,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // Singular Route: builds query object, passes queryObject to each util
+// Returns completed queryDoc
 
 app.get("/query/:query", async (req, res) => {
   
@@ -58,39 +59,31 @@ app.get("/query/:query", async (req, res) => {
   }
 
   
-
-  let queryObject = await Query.findOne({query: asset}, async function(err, queryDoc) {
-    if(err) {
-      return console.log(err)
-    } else if (!queryDoc) {
-      return await new Query({query: asset}).save().exec()
-    } else {
-      return queryDoc
-    }
+  let queryObject = await Query.findOneAndUpdate({
+    query: asset
+  }, {
+    query: asset
+  }, {
+    upsert: true, new: true
   })
 
-  // console.log(queryObject.query)
+  try {
 
-  constructSubredditsByQuery(queryObject).then(obj => {
-      constructPostsBySubreddit(obj).then(obj => {
-          constructCommentsByPost(obj).then(obj => {
-            res.status(200).json('query complete')
-          }).catch(err => console.log(err))
-      }).catch(err => console.log(err))
-  }).catch(err => console.log(err))
-  
-})
+    let queryObjectSub = await constructSubredditsByQuery(queryObject)
+    // console.log(queryObjectSub)
+    let queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
+    // console.log(queryObjectPost)
+    let queryObjectComment = await constructCommentsByPost(queryObjectPost)
+    // console.log(queryObjectComment)
+    
+    res.status(200).json(queryObjectComment);
+    
+  } catch (err) {
 
-app.get('/query2/:subredditId', async (req, res) => {
-  let testObject = {
-    subreddits: ["608854c13220ea9cd552648c"],
-    id: "608880b7fae938a54c30cd4c",
-    query: "crypto",
+    console.log(err)
+
   }
-  const postsObject = constructPostsBySubreddit(testObject)
 
-  console.log(postsObject)
-    // .then(postsObject => console.log(postsObject))
 })
 
 const PORT = process.env.PORT || 5000;

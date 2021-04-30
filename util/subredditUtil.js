@@ -55,7 +55,8 @@ function parseSubreddits(html, queryObj) {
               queries: queryObj.id,
             },
             {
-              new: true
+              upsert: true,
+              new: true,
             }
             ).exec();
 
@@ -89,12 +90,17 @@ function parseSubCount(string) {
   
   const stringArray = string.split(' ');
   
-  if( stringArray.length === 1 ) return null;
+  if( stringArray.length === 0 ) return null;
   
   const number = stringArray[0]
   const multipliers = { k: 1000, m: 1000000 }
 
-  return parseFloat(number.slice(0, -1)) * multipliers[number.slice(-1)]
+  let subCount = parseFloat(number.slice(0, -1)) * (multipliers[number.slice(-1)] || 1)
+  if(typeof subCount === 'number' && subCount !== NaN ) {
+    return subCount
+  } else {
+    return null
+  }
 }
 
 module.exports = constructSubredditsByQuery;

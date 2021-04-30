@@ -6,7 +6,8 @@ const cryptoTickers = {
   'btc':'bitcoin', 'eth':'ethereum', 
   'bnb': 'binance coin', 'xrp':'ripple', 'usdt':'tether', 
   'ada':'cardano', 'doge':'dogecoin', 'dot':'polkadot', 
-  'uni':'uniswap', 'ltc':'litecoin', 'link':'chainlink'
+  'uni':'uniswap', 'ltc':'litecoin', 'link':'chainlink',
+  'neo':'neo'
 }
 
 const stockTickers = {

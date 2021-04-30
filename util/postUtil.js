@@ -50,10 +50,14 @@ async function getPosts(baseUrl, params) {
     const html = await axios.get(URL)
     const postResults = await parsePosts(html.data, params)
     
-    queryObject.posts.push({ $each: postResults })
-    const queryDoc = queryObject.save()
+    if(postResults) {
 
-    return queryDoc
+      queryObject.posts.push({ $each: postResults })
+      const queryDoc = queryObject.save()
+      
+      return queryDoc
+      
+    }
     
   } catch (err) {
     
@@ -84,18 +88,25 @@ function parsePosts(html, params) {
       
       postsObject[id] = {
         title: rawTitle[0],
+        subredditName: subredditObject.shortLink,
+        subredditRef: params.subredditObject.id,
         localId: id,
-        subredditId: params.subredditObject.id,
         url: path,
+        author: null,
+        promoted: null,
         postTimeStamp: timestamp,
         upvotes: parseUpvotes(upvotes),
         commentCount: parseCommentNumber(commentCount),
         queries: params.queryObject.id
       }
       
-      let promise = saveObjects(postsObject[id], subredditObject)
+      if(postsObject[id].upvotes > 0 && postsObject[id].comments.length > 0) {
 
-      promises.push(promise)
+        let promise = saveObjects(postsObject[id], subredditObject)
+        promises.push(promise)
+
+      }
+        
 
     }
   );
@@ -113,20 +124,20 @@ function parsePosts(html, params) {
     .catch(err => console.log(err))
 }
 
-async function saveObjects(post, sub, query) {
+async function saveObjects(post) {
 
   try {
 
     let postDoc = await Post.findOneAndUpdate({
       localId: post.localId
-    }, {
-      post
-    }, {
+    },
+      post, 
+    {
       upsert: true,
       new: true
     }).then(post => {
       return post
-    })
+    }).catch(err => console.log(err))
 
     return postDoc
 

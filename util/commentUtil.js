@@ -37,24 +37,29 @@ async function constructCommentsByPost(queryObject) {
 async function getComments(postObject, queryObject) {
 
   const { url } = postObject
-  const oldRedditUrl = "https://old." + url.split("https://www.")[1];
 
-  
-  try {
-    
-    const html = await axios.get(oldRedditUrl)
-    const commentsResult = await parseComment(html.data, postObject, queryObject)
+  if( !url ) {
+    console.log(postObject.localId)
+  } else {
+    const oldRedditUrl = "https://old." + url.split("https://www.")[1];
 
-    queryObject.comments.push({$each: commentsResult})
+    try {
+      const html = await axios.get(oldRedditUrl);
+      const commentsResult = await parseComment(
+        html.data,
+        postObject,
+        queryObject
+      );
+      
 
-    const queryDoc = queryObject.save()
+      queryObject.comments.push({ $each: commentsResult });
 
-    return queryDoc
+      const queryDoc = queryObject.save();
 
-  } catch (err) {
-    
-    console.log(err)
-    
+      return queryDoc;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
@@ -72,95 +77,100 @@ function parseComment(html, postObject, queryObject) {
   postObject.commentCount = parseInt($(postComment).attr('data-comments-count'))
 
 
-  postObject.save().then((postDoc) => {
-    $(html)
-      .find("div.sitetable.nestedlisting > div.thing.comment")
-      .each((index, topLevelComment) => {
-        // Parent topLevelComment object construction
-        const parent = $(topLevelComment)
-          .find("p.parent")
-          .siblings("div.entry.unvoted")
-          .each((i, comment) => {
-            let authorIdString = $(comment)
-              .find("a.author.may-blank")
-              .attr("class");
+  
+  $(html)
+    .find("div.sitetable.nestedlisting > div.thing.comment")
+    .each((index, topLevelComment) => {
+      
+      // Parent topLevelComment object construction
 
-            if (!authorIdString) {
-              authorIdString = "";
-            }
+      const parent = $(topLevelComment)
+        .find("p.parent")
+        .siblings("div.entry.unvoted")
+        .each((i, comment) => {
+          let authorIdString = $(comment)
+            .find("a.author.may-blank")
+            .attr("class");
 
-            const authorId = authorIdString.substring(
-              authorIdString.indexOf("id-")
-            );
+          if (!authorIdString) {
+            authorIdString = "";
+          }
 
-            const commentId = $(comment)
-              .find('form.usertext > input[name="thing_id"]')
-              .attr("value");
-            const localId = authorId.concat(commentId);
+          const authorId = authorIdString.substring(
+            authorIdString.indexOf("id-")
+          );
 
-            const cheerioTextNodes = $(comment)
-              .find("div.usertext-body > div.md")
-              .children("p")
-              .text();
+          const commentId = $(comment)
+            .find('form.usertext > input[name="thing_id"]')
+            .attr("value");
+          const localId = authorId.concat(commentId);
 
-            const parentCommentObject = {
-              postId: postObject.id,
-              author: $(comment).find("a.author.may-blank").text(),
+          const cheerioTextNodes = $(comment)
+            .find("div.usertext-body > div.md")
+            .children("p")
+            .text();
 
-              authorId: authorId,
-              commentId: commentId,
-              upvotes: parseVotes($(comment).find("span.score.likes").text()),
+          const parentCommentObject = {
+            postId: postObject.id,
+            author: $(comment).find("a.author.may-blank").text(),
 
-              downvotes: parseVotes(
-                $(comment).find("span.score.dislikes").text()
-              ),
+            authorId: authorId,
+            commentId: commentId,
+            upvotes: parseVotes($(comment).find("span.score.likes").text()),
 
-              unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
+            downvotes: parseVotes(
+              $(comment).find("span.score.dislikes").text()
+            ),
 
-              timestamp: $(comment).find("p.tagline > time").attr("datetime"),
+            unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
 
-              text: cheerioTextNodes,
-              query: queryObject.id,
-            };
+            timestamp: $(comment).find("p.tagline > time").attr("datetime"),
 
-            if (parentCommentObject.text) {
-              const promise = Comment.findOneAndUpdate(
-                {
-                  authorId: authorId,
-                  commentId: commentId,
-                },
-                {
-                  parentCommentObject,
-                },
-                {
-                  new: true,
-                  upsert: true,
-                }
-              )
-                .then((comment) => {
-                  return comment;
-                })
-                .catch((err) => console.log(err));
+            text: cheerioTextNodes,
+            query: queryObject.id,
+          };
 
-              promises.push(promise);
-            }
-          });
-      });
+          if (parentCommentObject.text 
+            && parentCommentObject.upvotes > 0 ) {
+            const promise = Comment.findOneAndUpdate(
+              {
+                authorId: authorId,
+                commentId: commentId,
+              },
+              {
+                parentCommentObject,
+              },
+              {
+                new: true,
+                upsert: true,
+              }
+            )
+              .then((comment) => {
+                return comment;
+              })
+              .catch((err) => console.log(err));
 
-    return Promise.allSettled(promises).then((commentDocArray) => {
-      let commentIds = commentDocArray.map((com) => {
-        if (com) {
-          return com.id;
-        }
-      });
-
-      postDoc.comments.push({$each: commentIds})
-
-      let returnComments = postDoc.save().then(() => commentIds)
-
-      return returnComments
-
+            promises.push(promise);
+          }
+        });
     });
+
+  return Promise.allSettled(promises).then((commentDocArray) => {
+    let commentIds = commentDocArray.map((com) => {
+      if (com.value) {
+        return com.value.id;
+      }
+    });
+
+    postObject.comments.push({$each: commentIds})
+
+    let returnComments = postObject.save().then((postDoc) => {
+      processRedditPosts(postDoc)
+      return commentIds
+    })
+
+    return returnComments
+
   });
 }
 
