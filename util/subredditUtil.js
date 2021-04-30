@@ -13,9 +13,8 @@ async function getSubreddits(queryDoc) {
   try {
     
     const html = await axios.get(URL)
-    await parseSubreddits(html.data, queryDoc)
-    const queryObj = await Query.findById(queryDoc.id)
-    return queryObj
+    let test = await parseSubreddits(html.data, queryDoc)
+    return test
     
   } catch(err) {
 
@@ -61,19 +60,6 @@ function parseSubreddits(html, queryObj) {
             ).exec();
 
             promises.push(subredditDoc)
-          const queryDoc = Query.findOneAndUpdate(
-              {
-                id: queryObj.id
-              },
-              {
-                $push: {subreddits: subredditDoc.id}
-              },
-              {
-                new: true
-              }
-            ).then(doc => doc);
-
-            promises.push(queryDoc)
             
           } catch (err) {
             
@@ -86,8 +72,16 @@ function parseSubreddits(html, queryObj) {
     }
   })
 
-    return Promise.allSettled(promises)
-      .then(doc => doc)
+    return Promise.all(promises)
+      .then(subs => {
+
+        let subsId = subs.map(sub => sub.id)
+
+        queryObj.subreddits.push({$each: subsId})
+        
+        return queryObj.save()
+
+      })
       .catch(err => console.log(err))
 }
 
