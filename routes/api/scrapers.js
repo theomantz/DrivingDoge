@@ -1,9 +1,7 @@
 const express = require("express")
 const router = express.Router();
-const getSubreddits = require("../../web_scrapers/subredditScraper");
-const Subreddit = require('../../models/Subreddit')
-const Post = require('../../models/Post')
-const Comment = require('../../models/Comment')
+const getSubreddits = require("../../util/subredditUtil");
+
 
 
 router.post("/:subreddit", (req, res) => {

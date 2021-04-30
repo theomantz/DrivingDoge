@@ -7,19 +7,43 @@ const CommentSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId, 
       ref: "Post" 
     },
-    test: {
-      type: String,
-      required: true
-    },
     author: {
       type: String,
-      required: true
+      required: false
+    },
+    authorId: {
+      type: String,
+      required: false
+    },
+    commentId: {
+      type: String,
+      required: false
     },
     upvotes: {
       type: Number,
       required: true
     },
-    commentTimeStamp: {
+    downvotes: {
+      type: Number,
+      required: true
+    },
+    unvoted: {
+      type: Number,
+      required: true
+    },
+    timestamp: {
+      type: String,
+      required: false
+    },
+    text: {
+      type: String,
+      required: true
+    },
+    sentimentScore: {
+      type: Number,
+      required: false
+    },
+    commentSentiment: {
       type: String,
       required: false
     },
@@ -32,3 +56,5 @@ const CommentSchema = new Schema(
     timestamps: true
   }
 )
+
+module.exports = Comment = mongoose.model("Comment", CommentSchema)

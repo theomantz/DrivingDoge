@@ -15,10 +15,22 @@ const SubredditSchema = new Schema(
       type: Number,
       required: false
     },
-    queryParams: {
-      type: [String],
-      required: true
-    }
+    description: {
+      type: String,
+      required: false
+    },
+    posts: [{
+      type: Schema.Types.ObjectId,
+      ref: "Post"
+    }],
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Comment'
+    }],
+    queries: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Query"
+    }]
   },
   {
     timestamps: true

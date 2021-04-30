@@ -7,13 +7,29 @@ const PostSchema = new Schema(
       type: String,
       required: true,
     },
-    subredditId: {
+    subredditRef: {
       type: Schema.Types.ObjectId,
       ref: "Subreddit",
     },
-    author: {
+    subredditName: {
+      type: String,
+      required: false
+    },
+    localId: {
       type: String,
       required: true,
+    },
+    url: {
+      type: String,
+      required: true
+    },
+    author: {
+      type: String,
+      required: false,
+    },
+    promoted: {
+      type: Boolean,
+      required: false
     },
     upvotes: {
       type: Number,
@@ -23,10 +39,22 @@ const PostSchema = new Schema(
       type: String,
       required: false,
     },
-    queryParams: {
-      type: [String],
-      required: true,
+    commentCount: {
+      type: Number,
+      required: true
     },
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: "Comment"
+    }],
+    averageScore: {
+      type: Number,
+      required: false
+    },
+    queries: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Query"
+    }],
   },
   {
     timestamps: true,
