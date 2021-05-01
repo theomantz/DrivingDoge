@@ -131,20 +131,18 @@ function parseComment(html, postObject, queryObject) {
           };
 
           if (parentCommentObject.text 
-            && parentCommentObject.upvotes > 0 ) {
+            && parentCommentObject.upvotes ) {
             const promise = Comment.findOneAndUpdate(
               {
                 authorId: authorId,
                 commentId: commentId,
               },
-              {
                 parentCommentObject,
-              },
               {
                 new: true,
                 upsert: true,
               }
-            )
+            ).exec()
               .then((comment) => {
                 return comment;
               })

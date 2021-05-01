@@ -70,11 +70,13 @@ app.get("/query/:query", async (req, res) => {
   try {
 
     let queryObjectSub = await constructSubredditsByQuery(queryObject)
-    // console.log(queryObjectSub)
+    console.log(queryObjectSub)
+    
     let queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
-    // console.log(queryObjectPost)
+    console.log(queryObjectPost)
+    
     let queryObjectComment = await constructCommentsByPost(queryObjectPost)
-    // console.log(queryObjectComment)
+    console.log(queryObjectComment)
     
     res.status(200).json(queryObjectComment);
     

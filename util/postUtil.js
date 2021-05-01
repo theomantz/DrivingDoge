@@ -56,7 +56,7 @@ async function getPosts(baseUrl, params) {
       const queryDoc = queryObject.save()
       
       return queryDoc
-      
+
     }
     
   } catch (err) {
@@ -86,7 +86,7 @@ function parsePosts(html, params) {
       let commentCount = $(post).find('.icon-comment').siblings('span').text()
       let upvotes = $(post).find("button[aria-label='upvote']").siblings('div').text();
       
-      postsObject[id] = {
+      const postsObject = {
         title: rawTitle[0],
         subredditName: subredditObject.shortLink,
         subredditRef: params.subredditObject.id,
@@ -100,9 +100,9 @@ function parsePosts(html, params) {
         queries: params.queryObject.id
       }
       
-      if(postsObject[id].upvotes > 0 && postsObject[id].comments.length > 0) {
+      if(postsObject.upvotes  && postsObject.commentCount) {
 
-        let promise = saveObjects(postsObject[id], subredditObject)
+        let promise = saveObjects(postsObject)
         promises.push(promise)
 
       }
