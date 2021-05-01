@@ -173,7 +173,9 @@ function parseComment(html, postObject, queryObject) {
     postObject.comments.push({$each: commentIds})
 
     let returnComments = postObject.save().then((postDoc) => {
-      processRedditPosts(postDoc)
+      if(postDoc.comments.length) {
+        processRedditPosts(postDoc)
+      }
       return commentIds
     })
 

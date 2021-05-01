@@ -51,6 +51,10 @@ const PostSchema = new Schema(
       type: Number,
       required: false
     },
+    sentimentScore: {
+      type: String,
+      required: false
+    },
     queries: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Query"

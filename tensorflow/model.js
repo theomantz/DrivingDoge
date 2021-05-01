@@ -7,6 +7,7 @@ const Comment = require('../models/Comment')
 const Post = require('../models/Post')
 const Query = require('../models/Query')
 const Subreddit = require('../models/Subreddit')
+const { comment } = require('../config/searchConfig')
 
 
 
@@ -30,6 +31,7 @@ const SentimentRange = {
 
 let model
 let metadata
+let postObject
 let urls
 
 const PadIndex = 0;
@@ -109,15 +111,11 @@ function padSequences(
 }
 
 function assignSentimentScore(text) {
-  const inputTextArray = text
-    .trim()
-    .toLowerCase()
-    .replace(/(\.|\,|\!)/g, "")
-    .split(" ");
+  const inputTextArray = sanitizeText(text)
   const indexSequence = [].concat(inputTextArray.map(word => {
-    let normalWord = normalizeWords(word)
+    let normalWord = normalizeWord(word)
     let wordIndex = metadata.word_index[normalWord] + metadata.index_from
-    if( wordIndex > metadata.vocabulary_size ) {
+    if( wordIndex > metadata.vocabulary_size || isNaN(wordIndex)) {
       wordIndex = OOVIndex
     }
     return wordIndex
@@ -134,7 +132,17 @@ function assignSentimentScore(text) {
   return score
 }
 
-function normalizeWords(word) {
+function sanitizeText(text) {
+  let textArray = text
+    .trim()
+    .toLowerCase()
+    .replace(/(\.|\,|\!|\?|\#)/g, "")
+    .replace(/(\$)/g, " dollars ")
+    .split(" ")
+  return textArray.map(word => word.trim())
+}
+
+function normalizeWord(word) {
   const mispelled = SpellChecker.isMisspelled(word)
   if( !mispelled ) return word
   const options = SpellChecker.getCorrectionsForMisspelling(word);
@@ -147,6 +155,7 @@ function processRedditPosts(postObject) {
   const promises = [];
   const comments = postObject.comments
   if(!comments) return console.log('no comments')
+  postObject = postObject
   
   setupTfModels().then( async (model, postObject) => {
 
@@ -157,11 +166,8 @@ function processRedditPosts(postObject) {
       try {
 
         const comment = await Comment.findById(id).exec()
-
-        console.log(id)
-        console.log(comment)
         
-        const commentText = comment.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
+        const commentText = comment.text.replace(/(\.|\,|\!)/g, "");
         
         const sentimentScore = assignSentimentScore(commentText);
 
@@ -188,19 +194,35 @@ function processRedditPosts(postObject) {
         console.log(err)
         
       }
-
-      
-    //   await comment.update({
-    //     sentimentScore: sentimentScore, 
-    //     commentSentiment: commentSentiment})
-    //     .then(() => console.log('comment updated with sentiment score'))
-    //     .catch(err => console.log(err))
     }
 
-    return Promise.all(promises).then(() => {
-      const averageScore = toFixed(commentScoreSum / comments.length)
-      postObject.averageScore = averageScore
+    return Promise.all(promises).then( async (commentArray) => {
+
+      let SentimentBounds = {
+        positive: 0.66,
+        neutral: 0.33,
+        negative: 0,
+      };
+      
+      let id = commentArray.pop().postId
+      let postObject = await Post.findById(id)
+      
+      const averageScore = parseFloat((commentScoreSum / comments.length).toFixed(10))
+
+      postObject.averageScore = averageScore || 0
+
+      if (averageScore > SentimentBounds.positive) {
+        averageSentiment = "positive";
+      } else if (averageScore > SentimentBounds.neutral) {
+        averageSentiment = "neutral";
+      } else {
+        averageSentiment = "negative";
+      }
+
+      postObject.averageSentiment
+      
       postObject.save().then(() => {
+
         return postObject
       })
     })

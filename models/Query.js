@@ -13,6 +13,14 @@ const QuerySchema = new Schema(
       require: false,
       default: searchConfig
     },
+    averageScore: {
+      type: Number,
+      required: false
+    },
+    sentimentScore: {
+      type: String,
+      required: false
+    },
     subreddits: {
       type: [{
         type: mongoose.Schema.Types.ObjectId,

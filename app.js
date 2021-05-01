@@ -74,6 +74,10 @@ app.get("/query/:query", async (req, res) => {
     const queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
     
     const queryObjectComment = await constructCommentsByPost(queryObjectPost)
+
+    const queryObjectResponse = await constructQueryForResponse(queryObjectComment)
+    
+    // const response = await queryObjectComment.populate("subreddits")
     
     res.status(200).json(queryObjectComment);
     

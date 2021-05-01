@@ -19,6 +19,14 @@ const SubredditSchema = new Schema(
       type: String,
       required: false
     },
+    averageScore: {
+      type: Number,
+      required: false
+    },
+    sentimentScore: {
+      type: String,
+      required: false
+    },
     posts: [{
       type: Schema.Types.ObjectId,
       ref: "Post"
