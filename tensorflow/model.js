@@ -123,7 +123,7 @@ function assignSentimentScore(text) {
     return wordIndex
   }))
 
-  const paddedIndexSequence = padSequences(indexSequence, metadata.max_len)
+  const paddedIndexSequence = padSequences([indexSequence], metadata.max_len)
   const input = tf.tensor2d(paddedIndexSequence, [1, metadata.max_len])
 
   const predict = model.predict(input);

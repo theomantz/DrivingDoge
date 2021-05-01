@@ -44,7 +44,7 @@ async function constructPostsBySubreddit(queryObject) {
 async function getPosts(baseUrl, objects) {
 
   const { queryObject } = objects
-  const { time, sort } = queryObject.post
+  const { time, sort } = queryObject.params.post
 
   const URL = `${baseUrl}search?q=${queryObject.query}&restrict_sr=1&type=link&sort=${sort}&t=${time}`;
 
@@ -73,7 +73,7 @@ async function getPosts(baseUrl, objects) {
 function parsePosts(html, objects) {
 
   const { queryObject, subredditObject } = objects
-  const { limit } = queryObject.post
+  const { limit } = queryObject.params.post
   const promises = [];
 
   const $ = cheerio.load(html);

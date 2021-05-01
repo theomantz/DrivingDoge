@@ -89,79 +89,78 @@ function parseComment(html, postObject, queryObject) {
   $(html)
     .find("div.sitetable.nestedlisting > div.thing.comment")
     .each((i, topLevelComment) => {
-      if(promises.length < limit) {
-
-        // Parent topLevelComment object construction
-        
-        $(topLevelComment)
-        .find("p.parent")
-        .siblings("div.entry.unvoted")
-        .each((i, comment) => {
-          let authorIdString = $(comment)
-          .find("a.author.may-blank")
-          .attr("class");
-          
-          if (!authorIdString) {
-            authorIdString = "";
-          }
-          
-          const authorId = authorIdString.substring(
-            authorIdString.indexOf("id-")
-            );
+      
+      // Parent topLevelComment object construction
+      
+      $(topLevelComment)
+      .find("p.parent")
+      .siblings("div.entry.unvoted")
+      .each((i, comment) => {
+          if(promises.length < limit) {
+            let authorIdString = $(comment)
+            .find("a.author.may-blank")
+            .attr("class");
             
-            const commentId = $(comment)
-            .find('form.usertext > input[name="thing_id"]')
-            .attr("value");
+            if (!authorIdString) {
+              authorIdString = "";
+            }
             
-            
-            const cheerioTextNodes = $(comment)
-            .find("div.usertext-body > div.md")
-            .children("p")
-            .text();
-            
-            const parentCommentObject = {
-              postId: postObject.id,
-              author: $(comment).find("a.author.may-blank").text(),
+            const authorId = authorIdString.substring(
+              authorIdString.indexOf("id-")
+              );
               
-              authorId: authorId,
-              commentId: commentId,
-              upvotes: parseVotes($(comment).find("span.score.likes").text()),
+              const commentId = $(comment)
+              .find('form.usertext > input[name="thing_id"]')
+              .attr("value");
               
-              downvotes: parseVotes(
-                $(comment).find("span.score.dislikes").text()
-                ),
-                
-                unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
-                
-                timestamp: $(comment).find("p.tagline > time").attr("datetime"),
-                
-                text: cheerioTextNodes,
-                query: queryObject.id,
-              };
               
-              if (parentCommentObject.text 
-                && parentCommentObject.upvotes ) {
-                  const promise = Comment.findOneAndUpdate(
-                    {
-                      authorId: authorId,
-                      commentId: commentId,
-                    },
-                    parentCommentObject,
-                    {
-                      new: true,
-                      upsert: true,
+              const cheerioTextNodes = $(comment)
+              .find("div.usertext-body > div.md")
+              .children("p")
+              .text();
+              
+              const parentCommentObject = {
+                postId: postObject.id,
+                author: $(comment).find("a.author.may-blank").text(),
+                
+                authorId: authorId,
+                commentId: commentId,
+                upvotes: parseVotes($(comment).find("span.score.likes").text()),
+                
+                downvotes: parseVotes(
+                  $(comment).find("span.score.dislikes").text()
+                  ),
+                  
+                  unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
+                  
+                  timestamp: $(comment).find("p.tagline > time").attr("datetime"),
+                  
+                  text: cheerioTextNodes,
+                  query: queryObject.id,
+                };
+                
+                if (parentCommentObject.text 
+                  && parentCommentObject.upvotes ) {
+                    const promise = Comment.findOneAndUpdate(
+                      {
+                        authorId: authorId,
+                        commentId: commentId,
+                      },
+                      parentCommentObject,
+                      {
+                        new: true,
+                        upsert: true,
+                      }
+                      ).exec()
+                      .then((comment) => {
+                        return comment;
+                      })
+                      .catch((err) => console.log(err));
+                      
+                      promises.push(promise);
                     }
-                    ).exec()
-                    .then((comment) => {
-                      return comment;
-                    })
-                    .catch((err) => console.log(err));
-                    
-                    promises.push(promise);
                   }
-                });
-                
-              }
+            });
     });
 
   return Promise.allSettled(promises).then((commentDocArray) => {
