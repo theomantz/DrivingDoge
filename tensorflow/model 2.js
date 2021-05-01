@@ -33,7 +33,7 @@ let metadata
 let urls
 
 const PadIndex = 0;
-let OOVIndex = 2;
+let OOVIndex = uuidv4();
 
 function initialize() {
   // if(typeof window === 'undefined') {
@@ -73,39 +73,25 @@ async function loadMetaData(url) {
   }
 }
 
-function padSequences(
-  sequences,
-  maxLen,
-  padding = "pre",
-  truncating = "pre",
-  value = PadIndex
-) {
-  
-  return sequences.map((seq) => {
-    // Perform truncation.
-    if (seq.length > maxLen) {
-      if (truncating === "pre") {
-        seq.splice(0, seq.length - maxLen);
-      } else {
-        seq.splice(maxLen, seq.length - maxLen);
-      }
+function padIndexSequence(sequence, maxLength) {
+  // For brevity assume padding and truncation occur 'pre'
+  return sequence.map(seq => {
+    if(seq.length > maxLength) {
+      seq.splice(0, seq.length - maxLength)
     }
 
-    // Perform padding.
-    if (seq.length < maxLen) {
-      const pad = [];
-      for (let i = 0; i < maxLen - seq.length; ++i) {
-        pad.push(value);
+    const padding = [];
+    if(seq.length < maxLength) {
+      for(let i = 0; i < maxLength - seq.length; i++ ) {
+        padding.push(PadIndex)
       }
-      if (padding === "pre") {
-        seq = pad.concat(seq);
-      } else {
-        seq = seq.concat(pad);
-      }
+      // Assuming padding is pre
+      seq = padding.concat(seq)
     }
 
-    return seq;
-  });
+    return seq
+    
+  })
 }
 
 function assignSentimentScore(text) {
@@ -114,16 +100,16 @@ function assignSentimentScore(text) {
     .toLowerCase()
     .replace(/(\.|\,|\!)/g, "")
     .split(" ");
-  const indexSequence = [].concat(inputTextArray.map(word => {
+  const indexSequence = inputTextArray.map(word => {
     let normalWord = normalizeWords(word)
     let wordIndex = metadata.word_index[normalWord] + metadata.index_from
     if( wordIndex > metadata.vocabulary_size ) {
       wordIndex = OOVIndex
     }
     return wordIndex
-  }))
+  })
 
-  const paddedIndexSequence = padSequences(indexSequence, metadata.max_len)
+  const paddedIndexSequence = padIndexSequence(indexSequence, metadata.max_len)
   const input = tf.tensor2d(paddedIndexSequence, [1, metadata.max_len])
 
   const predict = model.predict(input);

@@ -103,7 +103,7 @@ function parseComment(html, postObject, queryObject) {
           const commentId = $(comment)
             .find('form.usertext > input[name="thing_id"]')
             .attr("value");
-          const localId = authorId.concat(commentId);
+
 
           const cheerioTextNodes = $(comment)
             .find("div.usertext-body > div.md")
