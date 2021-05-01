@@ -1,15 +1,22 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const Subreddit = require('../models/Subreddit')
+const searchConfig = require('../config/searchConfig')
 const Query = require('../models/Query')
+
+
+
 
 function constructSubredditsByQuery(queryDoc) {
   return getSubreddits(queryDoc)
 }
 
 async function getSubreddits(queryDoc) {
-  const { query } = queryDoc
-  const URL = `https://www.reddit.com/search?q=${query}&type=sr%2Cuser`;
+
+  const { query, params } = queryDoc
+  const { time, sort } = params.subreddit
+
+  const URL = `https://www.reddit.com/search?q=${query}&type=sr&sort=${sort}&t=${time}`;
   try {
     
     const html = await axios.get(URL)
@@ -28,8 +35,8 @@ async function getSubreddits(queryDoc) {
 function parseSubreddits(html, queryObj) {
 
   const promises = [];
-  
-  
+   
+  const { limit } = queryObj.params.subreddit
   
   const $ = cheerio.load(html);
 
@@ -37,7 +44,8 @@ function parseSubreddits(html, queryObj) {
   $("div.ListingLayout-outerContainer div > a")
     .each((index, element) => {
       const shortLink = $(element).attr('href')
-      if (shortLink.slice(0,3) === '/r/') {
+      if (shortLink.slice(0,3) === '/r/' &&
+        promises.length < limit ) {
 
         const subCountString = $(element).find("div > div > div").last().text();
         const subCount = parseSubCount(subCountString)

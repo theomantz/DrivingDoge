@@ -3,6 +3,7 @@ const cheerio = require("cheerio");
 const Query = require('../models/Query')
 const Post = require('../models/Post');
 const Subreddit = require('../models/Subreddit');
+const searchConfig = require('../config/searchConfig');
 
 
 async function constructPostsBySubreddit(queryObject) {
@@ -20,7 +21,6 @@ async function constructPostsBySubreddit(queryObject) {
       const { longLink } = subredditObject
       
       const updatedQueries = await getPosts(longLink, {
-          query: queryObject.query, 
           subredditObject: subredditObject,
           queryObject: queryObject
         })
@@ -41,14 +41,17 @@ async function constructPostsBySubreddit(queryObject) {
     .catch(err => console.log(err))
 }
 
-async function getPosts(baseUrl, params) {
-  const { queryObject } = params
-  const URL = `${baseUrl}search?q=${params.query}&restrict_sr=1`;
+async function getPosts(baseUrl, objects) {
+
+  const { queryObject } = objects
+  const { time, sort } = queryObject.post
+
+  const URL = `${baseUrl}search?q=${queryObject.query}&restrict_sr=1&type=link&sort=${sort}&t=${time}`;
 
   try {
 
     const html = await axios.get(URL)
-    const postResults = await parsePosts(html.data, params)
+    const postResults = await parsePosts(html.data, objects)
     
     if(postResults) {
 
@@ -66,50 +69,55 @@ async function getPosts(baseUrl, params) {
   }
 }
 
-function parsePosts(html, params) {
 
-  const postsObject = {};
-  const { queryObject, subredditObject } = params
+function parsePosts(html, objects) {
+
+  const { queryObject, subredditObject } = objects
+  const { limit } = queryObject.post
   const promises = [];
 
   const $ = cheerio.load(html);
-  $('div[data-click-id="body"]').each((index, post) => {
+  $('div[data-click-id="body"]').each((i, post) => {
 
-      let partialPath = $(post).find('a[data-click-id="body"]').attr('href')
-      let rawTitle = partialPath.split('/').slice(-2, -1)
-      const path = `https://www.reddit.com${partialPath}`;
-      let splitPath = partialPath.split('/')
-      
-      const id = `${splitPath[2]}_${splitPath[4]}`
-      let div = $(post).children('div').toArray()[1]
-      let timestamp = $(div).find('a[data-click-id="timestamp"]').text()
-      let commentCount = $(post).find('.icon-comment').siblings('span').text()
-      let upvotes = $(post).find("button[aria-label='upvote']").siblings('div').text();
-      
-      const postsObject = {
-        title: rawTitle[0],
-        subredditName: subredditObject.shortLink,
-        subredditRef: params.subredditObject.id,
-        localId: id,
-        url: path,
-        author: null,
-        promoted: null,
-        postTimeStamp: timestamp,
-        upvotes: parseUpvotes(upvotes),
-        commentCount: parseCommentNumber(commentCount),
-        queries: params.queryObject.id
-      }
-      
-      if(postsObject.upvotes  && postsObject.commentCount) {
-
-        let promise = saveObjects(postsObject)
-        promises.push(promise)
-
-      }
+      if(promises.length < limit) {
         
+        let partialPath = $(post).find('a[data-click-id="body"]').attr('href')
+        let rawTitle = partialPath.split('/').slice(-2, -1)
+        const path = `https://www.reddit.com${partialPath}`;
+        let splitPath = partialPath.split('/')
+        
+        const id = `${splitPath[2]}_${splitPath[4]}`
+        let div = $(post).children('div').toArray()[1]
+        let timestamp = $(div).find('a[data-click-id="timestamp"]').text()
+        let commentCount = $(post).find('.icon-comment').siblings('span').text()
+        let upvotes = $(post).find("button[aria-label='upvote']").siblings('div').text();
+        
+        const postsObject = {
+          title: rawTitle[0],
+          subredditName: subredditObject.shortLink,
+          subredditRef: objects.subredditObject.id,
+          localId: id,
+          url: path,
+          author: null,
+          promoted: null,
+          postTimeStamp: timestamp,
+          upvotes: parseUpvotes(upvotes),
+          commentCount: parseCommentNumber(commentCount),
+          queries: objects.queryObject.id
+        }
+        
+        if(postsObject.upvotes  && postsObject.commentCount) {
+          
+          let promise = saveObjects(postsObject)
+          promises.push(promise)
+          
+        }
+
+      }
 
     }
   );
+  
   return Promise.all(promises)
     .then(postDocArray => {
 
@@ -122,6 +130,7 @@ function parsePosts(html, params) {
 
     })
     .catch(err => console.log(err))
+
 }
 
 async function saveObjects(post) {

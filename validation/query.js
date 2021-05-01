@@ -1,3 +1,4 @@
+const { booleanMaskAsync } = require('@tensorflow/tfjs-core');
 const { default: validator } = require('validator');
 const Validator = require('validator');
 const validText = require('./valid-text');
@@ -24,10 +25,20 @@ module.exports = function validateQuery(query) {
   let errors = {}
   let asset = ''
 
+  query = query
+    .trim()
+    .toLowerCase()
+
   query = validText(query) ? query : '';
 
   if(!query.length) {
+
     errors.query = 'Please enter a valid ticker'
+    
+    return {
+      errors,
+      isValid: Boolean(query.length)
+    }
   }
 
   // Cryptos
@@ -38,11 +49,18 @@ module.exports = function validateQuery(query) {
   const shortStock = Object.keys(stockTickers)
   const longStock = Object.values(stockTickers)
 
-  // Check crypto
-  if(shortCrypto.includes(query) || shortStock.includes(query)) {
-    asset = cryptoTickers[query] || stockTickers[query];
+  // Check tickers
+  if(cryptoTickers[query] || stockTickers[query]) {
+
+    asset = `${cryptoTickers[query] || stockTickers[query]}+OR+${query}`;
+
   } else if (longCrypto.includes(query) || longStock.includes(query) ){
-    asset = query
+
+    longAsset = shortCrypto.find(key => cryptoTickers[key] === query) ||
+      shortStock.find(key => stockTickers[key] === query)
+
+    asset = `${query}+OR+${longAsset}`
+
   } else if ( assetClasses.includes(query) ) {
     asset = query
   } else {

@@ -1,3 +1,4 @@
+const searchConfig = require('../config/searchConfig')
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -6,6 +7,11 @@ const QuerySchema = new Schema(
     query: {
       type: String,
       require: true,
+    },
+    params: {
+      type: Object,
+      require: false,
+      default: searchConfig
     },
     subreddits: {
       type: [{
