@@ -1,33 +1,16 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, "src", "index.js"),
+  entry: path.resolve(__dirname, "public", "index.js"),
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
+    publicPath: '/'
   },
-  module: {
-    rules: [
-      {
-        test: [/\.js$/],
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/env'],
-            exclude: /(node_modules)/,
-          }
-        },
-      },
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader",
-        ],
-      },
-    ]
-  },
+  plugins: [
+    new webpack.ProgressPlugin()
+  ],
   devtool: 'source-map',
   resolve: {
     extensions: ['.js']

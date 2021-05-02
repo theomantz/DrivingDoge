@@ -24,11 +24,12 @@ const Query = require('./models/Query');
 // Validators
 const validateQueryInput = require('./validation/query');
 
-app.use(express.static('src'))
-app.use(scrapers)
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './src/index.html'))
+  let localPath = path.join(__dirname, "./public/index.html");
+  console.log(localPath)
+  res.sendFile(path.join(__dirname, './public/index.html'))
 })
 
 // Database Setup
@@ -95,6 +96,6 @@ app.get("/query/:query", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(__dirname)
+
   console.log(`listening on ${PORT}`)
 })
