@@ -27,8 +27,6 @@ const validateQueryInput = require('./validation/query');
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  let localPath = path.join(__dirname, "./public/index.html");
-  console.log(localPath)
   res.sendFile(path.join(__dirname, './public/index.html'))
 })
 

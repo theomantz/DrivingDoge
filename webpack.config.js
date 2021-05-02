@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, "public", "index.js"),
+  entry: path.resolve(__dirname, "public", "javascripts", "index.js"),
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
