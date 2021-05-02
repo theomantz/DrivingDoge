@@ -16,7 +16,7 @@ async function constructQueryForResponse(queryObject) {
 
   let averageScore = parseFloat((totalScore / scoreArray.length).toFixed(4))
 
-  let sentimentScore = (averageScore) => {
+  const sentimentScore = (averageScore) => {
     if (averageScore > SentimentBounds.positive) {
       return "positive";
     } else if (averageScore > SentimentBounds.neutral) {
@@ -27,12 +27,12 @@ async function constructQueryForResponse(queryObject) {
   };
 
   queryObject.averageScore = averageScore
-  queryObject.sentimentScore = sentimentScore
+  queryObject.sentimentScore = sentimentScore(averageScore)
 
   
   let queryDoc = await queryObject.save()
 
-  const resQuery = await Query.findById(queryDoc.id)
+  let queryDocPopulate = await Query.findById(queryDoc.id)
     .populate({
       path: "subreddits",
       select: "shortLink subCount description averageScore sentimentScore",
@@ -40,63 +40,16 @@ async function constructQueryForResponse(queryObject) {
         path: "posts",
         select:
           "title subredditName upvotes commentCount averageScore sentimentScore",
-        populate: {
-          path: "comments",
-          select:
-            "text upvotes downvotes unvoted sentimentScore commentSentiment",
-        },
       },
     })
-    .populate({
-      path: "posts",
-      select:
-        "title subredditName upvotes commentCount averageScore sentimentScore",
-      populate: {
-        path: "comments",
-        select:
-          "text upvotes downvotes unvoted sentimentScore commentSentiment",
-      },
-    })
-    .populate({
-      path: "comments",
-      select: "text upvotes downvotes unvoted sentimentScore commentSentiment",
-    });
-    // .populate('posts')
-    // .populate('comments')
 
-
-  // const resQuery = Query
-  // .findById(queryDoc.id)
-  // .populate({
-  //   path: 'subreddits',
-  //   select: [
-  //     'shortLink',
-  //     'subCount',
-  //     'description',
-  //     'averageScore',
-  //     'sentimentScore'
-  //   ]
-  // }).populate({
-  //   path: 'posts',
-  //   select: [
-  //     'title',
-  //     'subredditName',
-  //     'upvotes',
-  //     'commentCount',
-  //     'averageScore',
-  //     'sentimentScore'
-  //   ]
-  // }).populate({
-  //   path: 'comments',
-  //   select: [
-  //     'text',
-  //     'upvotes',
-  //     'downvotes',
-  //     'unvoted',
-  //     'sentimentScore',
-  //     'commentSentiment'
-  //   ]
-  // }).populateExec()
+    const resQuery = {
+      title: queryDocPopulate.query,
+      sentimentScore: queryDocPopulate.sentimentScore,
+      averageScore: queryDocPopulate.averageScore,
+      timeFrame: queryDocPopulate.params.post.time,
+      subreddits: queryDocPopulate.subreddits,
+    }
 
   return resQuery
   

@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 // Database Setup
 
 const mongoose = require('mongoose');
-const db = require('./config/keys').mongoURI;
+const db = require('./config/keys').mongoDB.mongoURI;
 
 
 mongoose
@@ -72,23 +72,21 @@ app.get("/query/:query", async (req, res) => {
 
   try {
 
-    // const queryObjectSub = await constructSubredditsByQuery(queryObject)
+    const queryObjectSub = await constructSubredditsByQuery(queryObject)
   
-    // const queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
+    const queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
     
-    // const queryObjectComment = await constructCommentsByPost(queryObjectPost)
-
-    const queryObjectComment = await Query.findOne({query: asset})
+    const queryObjectComment = await constructCommentsByPost(queryObjectPost)
 
     const queryObjectResponse = await constructQueryForResponse(queryObjectComment)
     
-    // const response = await queryObjectComment.populate("subreddits")
     
     res.status(200).json(queryObjectResponse);
     
   } catch (err) {
 
     console.log(err)
+    res.status(400).json(err)
 
   }
 

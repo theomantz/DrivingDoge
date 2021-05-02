@@ -167,18 +167,23 @@ function parseUpvotes(string) {
   
   if(Object.keys(abbreviations).includes(abbreviation)) {
     
-    return parseFloat(string.slice(0, -1)) * abbreviations[string.slice(-1)]
+    let upvotes = parseFloat(string.slice(0, -1)) * abbreviations[string.slice(-1)]
+    
+    return upvotes || 0
     
   } else {
     
-    return parseFloat(string)
+    let upvotes = parseFloat(string)
+
+    return upvotes || 0
 
   }
 }
 
 function parseCommentNumber(string) {
   if( string === '' ) return 0
-  return parseInt(string.split(' ')[0])
+  let commentCount = parseInt(string.split(' ')[0])
+  return commentCount || 0
 }
 
 module.exports = constructPostsBySubreddit

@@ -17,9 +17,17 @@ async function getSubreddits(queryDoc) {
   const { time, sort } = params.subreddit
 
   const URL = `https://www.reddit.com/search?q=${query}&type=sr&sort=${sort}&t=${time}`;
+
+  const options = {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+    },
+  };
+  
   try {
     
-    const html = await axios.get(URL)
+    const html = await axios.get(URL, options)
     let test = await parseSubreddits(html.data, queryDoc)
     return test
     

@@ -1,13 +1,10 @@
 const tf = require('@tensorflow/tfjs-node')
 const axios = require('axios')
-const { v4: uuidv4 } = require('uuid')
 
 const SpellChecker = require('spellchecker')
 const Comment = require('../models/Comment')
 const Post = require('../models/Post')
-const Query = require('../models/Query')
-const Subreddit = require('../models/Subreddit')
-const { comment } = require('../config/searchConfig')
+
 
 
 
@@ -18,10 +15,6 @@ const HostedUrls = {
     "https://storage.googleapis.com/tfjs-models/tfjs/sentiment_cnn_v1/metadata.json",
 };
 
-// const LocalUrls = {
-//   model: "./resources/model.json",
-//   metadata: "./resources/metadata.json",
-// }
 
 const SentimentRange = {
   positive: 0.66,
@@ -36,17 +29,6 @@ let urls
 
 const PadIndex = 0;
 let OOVIndex = 2;
-
-function initialize() {
-  // if(typeof window === 'undefined') {
-  //   urls = require('../config/urls');
-  // } else if(window.location.hostname === 'localhost') {
-  //   urls = require("../config/urls");
-  // } else {
-  //   urls = HostedUrls
-  // }
-}
-
 
 async function setupTfModels() {
   if(typeof model === 'undefined') {
@@ -150,14 +132,13 @@ function normalizeWord(word) {
 }
 
 function processRedditPosts(postObject) {
-  
-  initialize()
+
   const promises = [];
   const comments = postObject.comments
   if(!comments) return console.log('no comments')
   postObject = postObject
   
-  setupTfModels().then( async (model, postObject) => {
+  setupTfModels().then( async () => {
 
     let commentScoreSum = 0
     
@@ -196,7 +177,7 @@ function processRedditPosts(postObject) {
       }
     }
 
-    return Promise.all(promises).then( async (commentArray) => {
+    return Promise.all(promises).then( async commentArray => {
 
       let SentimentBounds = {
         positive: 0.66,
@@ -211,15 +192,17 @@ function processRedditPosts(postObject) {
 
       postObject.averageScore = averageScore || 0
 
+      let sentimentScore
+
       if (averageScore > SentimentBounds.positive) {
-        averageSentiment = "positive";
+        sentimentScore = "positive";
       } else if (averageScore > SentimentBounds.neutral) {
-        averageSentiment = "neutral";
+        sentimentScore = "neutral";
       } else {
-        averageSentiment = "negative";
+        sentimentScore = "negative";
       }
 
-      postObject.averageSentiment
+      postObject.sentimentScore = sentimentScore
       
       postObject.save().then(() => {
 
