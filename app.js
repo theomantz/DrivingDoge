@@ -13,6 +13,9 @@ const constructSubredditsByQuery = require('./util/subredditUtil')
 const constructPostsBySubreddit = require('./util/postUtil')
 const constructCommentsByPost = require('./util/commentUtil')
 
+// Response utility
+const constructQueryForResponse = require('./util/queryUtil')
+
 
 // Mongoose models
 const Subreddit = require('./models/Subreddit');
@@ -69,17 +72,19 @@ app.get("/query/:query", async (req, res) => {
 
   try {
 
-    const queryObjectSub = await constructSubredditsByQuery(queryObject)
+    // const queryObjectSub = await constructSubredditsByQuery(queryObject)
   
-    const queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
+    // const queryObjectPost = await constructPostsBySubreddit(queryObjectSub)
     
-    const queryObjectComment = await constructCommentsByPost(queryObjectPost)
+    // const queryObjectComment = await constructCommentsByPost(queryObjectPost)
+
+    const queryObjectComment = await Query.findOne({query: asset})
 
     const queryObjectResponse = await constructQueryForResponse(queryObjectComment)
     
     // const response = await queryObjectComment.populate("subreddits")
     
-    res.status(200).json(queryObjectComment);
+    res.status(200).json(queryObjectResponse);
     
   } catch (err) {
 

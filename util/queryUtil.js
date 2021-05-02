@@ -30,38 +30,75 @@ async function constructQueryForResponse(queryObject) {
   queryObject.sentimentScore = sentimentScore
 
   
-  let queryDoc = queryObject.save()
+  let queryDoc = await queryObject.save()
 
-  return queryDoc.populate({
-    path: 'subreddits',
-    select: [
-      'shortLink',
-      'subCount',
-      'description',
-      'averageScore',
-      'sentimentScore'
-    ]
-  }).populate({
-    path: 'posts',
-    select: [
-      'title',
-      'subredditName',
-      'upvotes',
-      'commentCount',
-      'averageScore',
-      'sentimentScore'
-    ]
-  }).populate({
-    path: 'comments',
-    select: [
-      'text',
-      'upvotes',
-      'downvotes',
-      'unvoted',
-      'sentimentScore',
-      'commentSentiment'
-    ]
-  }).populateExec()
+  const resQuery = await Query.findById(queryDoc.id)
+    .populate({
+      path: "subreddits",
+      select: "shortLink subCount description averageScore sentimentScore",
+      populate: {
+        path: "posts",
+        select:
+          "title subredditName upvotes commentCount averageScore sentimentScore",
+        populate: {
+          path: "comments",
+          select:
+            "text upvotes downvotes unvoted sentimentScore commentSentiment",
+        },
+      },
+    })
+    .populate({
+      path: "posts",
+      select:
+        "title subredditName upvotes commentCount averageScore sentimentScore",
+      populate: {
+        path: "comments",
+        select:
+          "text upvotes downvotes unvoted sentimentScore commentSentiment",
+      },
+    })
+    .populate({
+      path: "comments",
+      select: "text upvotes downvotes unvoted sentimentScore commentSentiment",
+    });
+    // .populate('posts')
+    // .populate('comments')
+
+
+  // const resQuery = Query
+  // .findById(queryDoc.id)
+  // .populate({
+  //   path: 'subreddits',
+  //   select: [
+  //     'shortLink',
+  //     'subCount',
+  //     'description',
+  //     'averageScore',
+  //     'sentimentScore'
+  //   ]
+  // }).populate({
+  //   path: 'posts',
+  //   select: [
+  //     'title',
+  //     'subredditName',
+  //     'upvotes',
+  //     'commentCount',
+  //     'averageScore',
+  //     'sentimentScore'
+  //   ]
+  // }).populate({
+  //   path: 'comments',
+  //   select: [
+  //     'text',
+  //     'upvotes',
+  //     'downvotes',
+  //     'unvoted',
+  //     'sentimentScore',
+  //     'commentSentiment'
+  //   ]
+  // }).populateExec()
+
+  return resQuery
   
 }
 
@@ -69,31 +106,34 @@ async function updateSubs(subredditIds) {
 
   const promises = [];
 
-  for(const id in subredditIds) {
+  for(const id of subredditIds) {
 
-    let score
+    
     
     try {
+
+      let score = 0
 
       const subreddit = await Subreddit
       .findById(id)
       .populate("posts", "averageScore")
       
-      subreddit.posts.forEach(post => {
-        score += post.averageScore
+      subreddit.posts.forEach((post) => {
+        score += post.averageScore || 0
       })
       
-      let averageScore = parseFloat((score / subreddit.posts.length).toFixed(4))
+      let averageScore = parseFloat((score / subreddit.posts.length).toFixed(4)) || 0
       
-      let sentimentScore = averageScore => {
-        if(averageScore > SentimentBounds.positive) {
-          return 'positive'
-        } else if (averageScore > SentimentBounds.neutral) {
-          return 'neutral'
-        } else {
-          return 'negative'
-        }
+      let sentimentScore
+      
+      if(averageScore > SentimentBounds.positive) {
+        sentimentScore = 'positive'
+      } else if (averageScore > SentimentBounds.neutral) {
+        sentimentScore = 'neutral'
+      } else {
+        sentimentScore = 'negative'
       }
+  
       
       subreddit.averageScore = averageScore
       subreddit.sentimentScore = sentimentScore
@@ -117,4 +157,4 @@ async function updateSubs(subredditIds) {
 
 }
 
-module.export = constructQueryForResponse
+module.exports = constructQueryForResponse

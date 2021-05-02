@@ -131,13 +131,13 @@ function parseComment(html, postObject, queryObject) {
                   $(comment).find("span.score.dislikes").text()
                   ),
                   
-                  unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
+                unvoted: parseVotes($(comment).find("span.score.unvoted").text()),
                   
-                  timestamp: $(comment).find("p.tagline > time").attr("datetime"),
+                timestamp: $(comment).find("p.tagline > time").attr("datetime"),
                   
-                  text: cheerioTextNodes,
-                  query: queryObject.id,
-                };
+                text: cheerioTextNodes,
+                query: queryObject.id,
+              };
                 
                 if (parentCommentObject.text 
                   && parentCommentObject.upvotes ) {
