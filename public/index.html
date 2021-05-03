@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Arimo&family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./main.css">
     <script type="text/javascript" src='./bundle.js'></script>
     <script src="https://d3js.org/d3.v4.js"></script>
@@ -14,28 +16,55 @@
   <body>
     <header class="header">
       <h1 id="app-header">Driving Doge</h1>
-      <p class="intro-paragraph">
-        The meteoric rise of Dogecoin during the early months of 2021 investors of all types puzzled. How could such a objectively pointless asset, a meme currency, acheive a reasonable value? The desire to uncover, what drives the price of Doge, and other assets gave rise to this project. 
-      </p>
-      <p class="technologies-paragraph">
-        What is attempted here is sentiment analysis of recent Reddit posts, relevant to each asset found using the site's own search engine. 
-
-        The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow ML Model trained on IMDB movie ratings. 
-      </p>
     </header>
-    <div class='main'>
-      <div id="root">
-
-        <div id='svg-title'></div>
-
+    <div id='svg-title'></div>
+    <div id="root">
+      <div id="left-sidenav">
+          <div id="about-chart">
+          <h3>About this Chart:</h3>
+        </div>
+        <div class="static-user-options">
+          <p class="user-options-paragraph paragraph">
+            You can click on each post to get more detailed information which will be shown in the section to the right of the chart.
+          </p>
+          <p class="user-options-paragraph second paragraph">
+            You can also view other asset charts by selecting from the dropdown below.
+          </p>
+        </div>
         <div class="search-div">
-<!--           <input 
-            class="input"
-            type="select"
-            id='asset-input'/> -->
+          <label class="asset-input-label">Select an Asset:
+              <select 
+              class="input"
+              type="select"
+              id='asset-input'></select>
+          </label>
         </div>
 
+      </div>
+      <div id='main'>
+
+
         <div id="svg-container"></div>
+
+        <div id="about-section">
+          <h1 class="about-header">About</h1>
+          <p class="intro-paragraph">
+             The meteoric rise of Dogecoin during the early months of 2021 investors of all types puzzled. How could such a objectively pointless asset, a meme currency, acheive a reasonable value? The desire to uncover, what drives the price of Doge, and other assets gave rise to this project. 
+          </p>
+          <p class="technologies-paragraph">
+            What is attempted here is sentiment analysis of recent Reddit posts, relevant to each asset found using the site's own search engine. 
+
+            The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow ML Model trained on IMDB movie ratings. 
+          </p>
+        </div>
+
+      </div>
+      <div id="right-sidenav">
+
+        <div id="chart-metrics">
+          <h3>Chart Metrics:</h3>
+
+        </div>
 
       </div>
     </div>

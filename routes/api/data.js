@@ -31,7 +31,7 @@ router.get("/:query", async (req, res) => {
     let response = constructResponse(resData);
 
     queriesAll.forEach(q => {
-      response.available.push(q.query)
+      response.data.available.push(q.query)
     })
 
     return res.status(200).json(response);
@@ -52,8 +52,10 @@ function constructResponse(resData) {
   let totalSubs = 0
   let value = 0
 
+
+
   const response = {
-    name: resData.query.split('+')[0],
+    name: resData.query,
     data: {
       sentimentScore: resData.sentimentScore,
       averageScore: resData.averageScore,
@@ -61,8 +63,8 @@ function constructResponse(resData) {
       createdAt: resData.createdAt,
       updatedAt: resData.updatedAt,
       totalSubs: 0,
+      available: [],
     },
-    available: [],
     value: 0,
     children: []
   }
@@ -116,7 +118,8 @@ function constructResponse(resData) {
   })
 
   response.value = value
-  response.totalSubs = totalSubs
+  console.log(totalSubs)
+  response.data.totalSubs = totalSubs
 
   resData.totalSubs = totalSubs
 

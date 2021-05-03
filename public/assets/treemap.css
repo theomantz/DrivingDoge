@@ -1,0 +1,50 @@
+/* Nav Containers dynamic rendering*/
+
+#about-chart h3 {
+  font-size: 24px;
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+#about-chart ul {
+  margin-top: 20px;
+  list-style: circle inside;
+}
+
+.chart-bullet {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+#chart-metrics h3 {
+  font-size: 24px;
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+#chart-metrics ul {
+  margin-top: 20px;
+  list-style: circle inside;
+}
+
+/* Treemap */
+
+#svg-title {
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+  width: 60%;
+  margin: auto;
+}
+
+#svg-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto 5px;
+}
+
+rect {
+  cursor: pointer;
+}

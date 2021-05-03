@@ -1,36 +1,99 @@
 
 header.header {
-  width: 80%;
-  margin: auto;
-
+  width: 100%;
+  margin: 1vw auto;
+  display: flex;
+  flex-direction: row;
 }
 
 #app-header {
   font-size: 54px;
   font-weight: 700;
-  margin: 5vw auto;
+  margin: 1vw auto;
   text-align: center;
+  font-family: 'Arimo', sans-serif;
 }
+
+#root {
+  display: flex;
+  flex-direction: row;
+  font-family: 'Montserrat', sans-serif;
+}
+
+#main {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  align-items: center;
+}
+
 
 .header p {
   margin: 20px auto;
   width: 60%;
 }
 
-#svg-title {
-  font-size: 48px;
-  font-weight: 700;
-  text-align: center;
+/* Left side nav static */
+
+#left-sidenav {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto;
+  padding: 20px 5px 20px 40px;
 }
 
-#svg-container {
+#about-section {
+  width: 60%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   margin: 20px auto;
 }
 
-rect {
-  cursor: pointer;
+.about-header {
+  text-align: left;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 20px auto;
+}
+
+.user-options-paragraph {
+  margin: 10px 0;
+}
+
+
+.search-div {
+  margin: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items:initial;
+  justify-content: space-between;
+}
+
+.asset-input-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#asset-input {
+  font-size: 17px;
+  width: 60%;
+  border: 1px solid lightgray;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 15px 0;
+  box-sizing: border-box;
+}
+
+/* Right side nav static */
+
+
+#right-sidenav {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto;
+  padding: 20px 40px 20px 5px;
 }

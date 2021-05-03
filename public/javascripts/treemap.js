@@ -1,3 +1,4 @@
+import '../assets/treemap.css'
 import { MARGIN } from '../config/pageConfig'
 
 
@@ -12,24 +13,84 @@ class Treemap {
     this.svg = svg
   }
 
+  appendPostInfo(d) {
+
+  }
+
+  appendChartInfo() {
+
+    const title = this.data.name.split('+')[0]
+    const { data } = this.data
+
+    const bullets = [
+      "Each square is a post", 
+      "Posts are grouped by Subreddit",
+      "Subreddits are labeled",
+      "Size is engagement",
+      "Color is sentiment"
+    ]
+
+    const chartData = [
+      `Average Sentiment: ${data.averageScore}`,
+      `Sentiment Score: ${data.sentimentScore}`,
+      `Time Frame: ${data.timeFrame}`,
+      `Total Subscribers: ${data.totalSubs}`
+    ]
+    
+    d3.select("#about-chart")
+      .append("p")
+      .text(
+        `The chart shown to the right is a treemap representation of Reddit engagement and sentiment surrounding ${title}.`
+      )
+      .attr('class', 'chart');
+
+
+    d3.select('#about-chart')
+        .append('ul')
+        .selectAll("bullets")
+        .data(bullets)
+        .enter()
+        .append('li')
+        .attr('class', 'chart chart-bullet')
+        .text((d) => {
+          return d
+        })
+
+    d3.select('#chart-metrics')
+        .append('ul')
+        .selectAll('chartData')
+        .data(chartData)
+        .enter()
+        .append('li')
+        .attr('class', 'chart chart-metrics')
+        .text((d) => {
+          return d
+        })
+        
+  }
+
 
   render() {
+
+    this.appendChartInfo()
     
     const tooltip = d3
-      .select("svg-container")
+      .select("#svg-container")
       .append("div")
       .style("position", "absolute")
       .style("z-index", "10")
       .style("visibility", "hidden")
-      .style("background", "#000")
-      .text("a simple tooltip");
+      .style("background", "white")
+
 
     const root = d3.hierarchy(this.data)
 
     
     d3.treemap()
       .size([this.width, this.height])
-      .padding(2)
+      .paddingTop(30)
+      .paddingRight(7)
+      .paddingInner(3)
       (root)
 
 
@@ -52,17 +113,25 @@ class Treemap {
       })
       .style("stroke", "black")
       .style("fill", (t => d3.interpolateRdYlGn(t.data.data.averageScore)))
-      .on("mouseover", function(d){tooltip.text(d); return tooltip.style("visibility", "visible");})
-      .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px")})
+      .on("mouseover", function(d){
+        tooltip.text(`Post Title: ${d.data.name}`);
+        let styles = {'left':`${d.x0}px` , 'visibility':'visible', 'top':`${d.y1}px`}
+        return Object.entries(styles).forEach(([prop, val]) => tooltip.style(prop, val))
+        
+      })
       .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
     this.svg
       .selectAll("text")
-      .data(root.leaves())
+      .data(
+        root.descendants().filter(function (d) {
+          return d.depth == 1;
+        })
+      )
       .enter()
       .append("text")
       .attr("x", function (d) {
-        return d.x0 + 5;
+        return d.x0 + (d.x0 + d.x1)/2;
       }) // +10 to adjust position (more right)
       .attr("y", function (d) {
         return d.y0 + 20;
@@ -70,8 +139,11 @@ class Treemap {
       .text(function (d) {
         return d.name;
       })
-      .attr("font-size", "6px")
-      .attr("fill", "white");
+      .text((d) => d.data.name)
+      .attr("font-size", "24px")
+      .attr("fill", "black");
+
+
   }
 
 }
