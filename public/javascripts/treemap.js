@@ -13,12 +13,18 @@ class Treemap {
   }
 
 
-
   render() {
     
+    const tooltip = d3
+      .select("svg-container")
+      .append("div")
+      .style("position", "absolute")
+      .style("z-index", "10")
+      .style("visibility", "hidden")
+      .style("background", "#000")
+      .text("a simple tooltip");
 
     const root = d3.hierarchy(this.data)
-
 
     
     d3.treemap()
@@ -27,27 +33,28 @@ class Treemap {
       (root)
 
 
-      debugger
-
     this.svg
       .selectAll("rect")
-        .data(root.leaves())
-        .enter()
-        .append("rect")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0;
-        })
-        .attr("width", function (d) {
-          return d.x1 - d.x0;
-        })
-        .attr("height", function (d) {
-          return d.y1 - d.y0;
-        })
-        .style("stroke", "black")
-        .style("fill", "slateblue");
+      .data(root.leaves())
+      .enter()
+      .append("rect")
+      .attr("x", function (d) {
+        return d.x0;
+      })
+      .attr("y", function (d) {
+        return d.y0;
+      })
+      .attr("width", function (d) {
+        return d.x1 - d.x0;
+      })
+      .attr("height", function (d) {
+        return d.y1 - d.y0;
+      })
+      .style("stroke", "black")
+      .style("fill", (t => d3.interpolateRdYlGn(t.data.data.averageScore)))
+      .on("mouseover", function(d){tooltip.text(d); return tooltip.style("visibility", "visible");})
+      .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px")})
+      .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
     this.svg
       .selectAll("text")

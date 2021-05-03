@@ -65,12 +65,22 @@ header.header {
   width: 60%;
 }
 
+#svg-title {
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+}
+
 #svg-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 20px auto;
+}
+
+rect {
+  cursor: pointer;
 }
 
 /*# sourceMappingURL=main.css.map*/

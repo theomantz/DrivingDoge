@@ -50,7 +50,8 @@ mongoose
 // Singular Route: builds query object, passes queryObject to each util
 // Returns completed queryDoc
 
-app.get("/query/:query", async (req, res) => {
+
+app.post("/query/:query", async (req, res) => {
   
   
   

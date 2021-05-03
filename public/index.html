@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="./main.css">
     <script type="text/javascript" src='./bundle.js'></script>
     <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-color.v2.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script>
     <title>Driving Doge</title>
   </head>
   <body>
@@ -21,14 +24,19 @@
       </p>
     </header>
     <div class='main'>
-
-      <div class="search-div">
-        <input 
-          class="input"
-          type="text"/>
-      </div>
       <div id="root">
+
+        <div id='svg-title'></div>
+
+        <div class="search-div">
+          <input 
+            class="input"
+            type="select"
+            id='asset-input'/>
+        </div>
+
         <div id="svg-container"></div>
+
       </div>
     </div>
 
