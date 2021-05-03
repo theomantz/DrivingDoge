@@ -51,7 +51,7 @@ mongoose
 // Returns completed queryDoc
 
 
-app.post("/query/:query", async (req, res) => {
+/* app.post("/query/:query", async (req, res) => {
   
   
   
@@ -92,7 +92,7 @@ app.post("/query/:query", async (req, res) => {
 
   }
 
-})
+}) */
 
 const PORT = process.env.PORT || 5000;
 
