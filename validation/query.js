@@ -9,7 +9,7 @@ const cryptoTickers = {
 }
 
 const stockTickers = {
-  'appl':'apple', 'msft':'microsoft', 'amzn':'amazon', 'goog':'google', 'googl':'google', 'fb':'facebook'
+  'appl':'apple', 'msft':'microsoft', 'amzn':'amazon', 'goog':'google', 'googl':'google', 'fb':'facebook', 'tsla':'tesla'
 }
 
 const assetClasses = [

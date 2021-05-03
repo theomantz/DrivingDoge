@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 // Database Setup
 
 const mongoose = require('mongoose');
-const db = require('./config/keys').mongoDB.mongoURI;
+const db = require('./config/keys');
 
 
 mongoose
