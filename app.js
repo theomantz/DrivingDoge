@@ -2,8 +2,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-// Scrapers Route - maybe use?
-const scrapers = require('./routes/api/scrapers');
 
 // Depreciated scraper in favor of 'constructXByY' architecture
 // const getSubreddits = require('./web_scrapers/subredditScraper')
@@ -16,9 +14,12 @@ const constructCommentsByPost = require('./util/commentUtil')
 // Response utility
 const constructQueryForResponse = require('./util/queryUtil')
 
+// Query API
+const query = require('./routes/api/data')
+
+app.use('/api/asset', query)
 
 // Mongoose models
-const Subreddit = require('./models/Subreddit');
 const Query = require('./models/Query');
 
 // Validators
@@ -27,6 +28,7 @@ const validateQueryInput = require('./validation/query');
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
+  console.log('request', req)
   res.sendFile(path.join(__dirname, './public/index.html'))
 })
 

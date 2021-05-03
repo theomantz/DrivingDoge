@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack');
 
 module.exports = {
@@ -9,10 +10,39 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
-    new webpack.ProgressPlugin()
+    new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "[id].css",
+      ignoreOrder: false
+    }),
+    require("autoprefixer")
   ],
   devtool: 'source-map',
   resolve: {
     extensions: ['.js']
-  }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: "babel-loader",
+          options: { presets: ["@babel/preset-env"] }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: "../",
+            }
+          },
+          "css-loader"
+        ]
+      }
+    ],
+  },
 };
