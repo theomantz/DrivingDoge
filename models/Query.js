@@ -21,6 +21,10 @@ const QuerySchema = new Schema(
       type: String,
       required: false
     },
+    totalSubs: {
+      type: Number,
+      required: false
+    },
     subreddits: {
       type: [{
         type: mongoose.Schema.Types.ObjectId,

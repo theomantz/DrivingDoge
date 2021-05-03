@@ -2,8 +2,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-// Scrapers Route - maybe use?
-const scrapers = require('./routes/api/scrapers');
 
 // Depreciated scraper in favor of 'constructXByY' architecture
 // const getSubreddits = require('./web_scrapers/subredditScraper')
@@ -16,19 +14,22 @@ const constructCommentsByPost = require('./util/commentUtil')
 // Response utility
 const constructQueryForResponse = require('./util/queryUtil')
 
+// Query API
+const query = require('./routes/api/data')
+
+app.use('/api/asset', query)
 
 // Mongoose models
-const Subreddit = require('./models/Subreddit');
 const Query = require('./models/Query');
 
 // Validators
 const validateQueryInput = require('./validation/query');
 
-app.use(express.static('src'))
-app.use(scrapers)
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './src/index.html'))
+  console.log('request', req)
+  res.sendFile(path.join(__dirname, './public/index.html'))
 })
 
 // Database Setup
@@ -49,7 +50,8 @@ mongoose
 // Singular Route: builds query object, passes queryObject to each util
 // Returns completed queryDoc
 
-app.get("/query/:query", async (req, res) => {
+
+app.post("/query/:query", async (req, res) => {
   
   
   
@@ -95,6 +97,6 @@ app.get("/query/:query", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(__dirname)
+
   console.log(`listening on ${PORT}`)
 })

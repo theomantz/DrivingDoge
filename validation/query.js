@@ -1,6 +1,3 @@
-const { booleanMaskAsync } = require('@tensorflow/tfjs-core');
-const { default: validator } = require('validator');
-const Validator = require('validator');
 const validText = require('./valid-text');
 
 const cryptoTickers = {

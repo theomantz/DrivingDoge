@@ -1,0 +1,36 @@
+
+header.header {
+  width: 80%;
+  margin: auto;
+
+}
+
+#app-header {
+  font-size: 54px;
+  font-weight: 700;
+  margin: 5vw auto;
+  text-align: center;
+}
+
+.header p {
+  margin: 20px auto;
+  width: 60%;
+}
+
+#svg-title {
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+}
+
+#svg-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+rect {
+  cursor: pointer;
+}

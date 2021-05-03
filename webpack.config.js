@@ -1,35 +1,48 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const webpack = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, "src", "index.js"),
+  entry: path.resolve(__dirname, "public", "javascripts", "index.js"),
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
+    publicPath: '/'
+  },
+  plugins: [
+    new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "[id].css",
+      ignoreOrder: false
+    }),
+    require("autoprefixer")
+  ],
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.js']
   },
   module: {
     rules: [
       {
-        test: [/\.js$/],
+        test: /\.js$/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/env'],
-            exclude: /(node_modules)/,
-          }
-        },
+          loader: "babel-loader",
+          options: { presets: ["@babel/preset-env"] }
+        }
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.css$/,
         use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader",
-        ],
-      },
-    ]
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: "../",
+            }
+          },
+          "css-loader"
+        ]
+      }
+    ],
   },
-  devtool: 'source-map',
-  resolve: {
-    extensions: ['.js']
-  }
 };
