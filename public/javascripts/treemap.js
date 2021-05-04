@@ -61,11 +61,15 @@ class Treemap {
       "Color is sentiment"
     ]
 
+    const date = new Date(data.createdAt).toDateString()
+    
     const chartData = [
+      `Total Engagement: ${data.value}`,
+      `Total Subscribers: ${data.totalSubs}`,
       `Average Sentiment: ${data.averageScore}`,
       `Sentiment Score: ${data.sentimentScore}`,
+      `Created: ${date}`,
       `Time Frame: ${data.timeFrame}`,
-      `Total Subscribers: ${data.totalSubs}`
     ]
 
     const defaultData = [
