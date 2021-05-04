@@ -46,6 +46,20 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+/* Document level  */
+
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 900px) {
+  html { font-size: 14px; }
+}
+@media (max-width: 400px) {
+  html { font-size: 12px; }
+}
+
+/* Document CSS */
 
 .header {
   width: 100%;
@@ -59,7 +73,7 @@ table {
 }
 
 #app-header {
-  font-size: 54px;
+  font-size: 2rem;
   font-weight: 700;
   margin: 1vw 0;
   text-align: center;
@@ -67,7 +81,7 @@ table {
 }
 
 .link {
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: 700;
   margin: 1vw 0;
   text-align: center;
@@ -81,6 +95,8 @@ table {
   flex-direction: row;
   font-family: 'Montserrat', sans-serif;
 }
+
+
 
 #main {
   display: flex;
@@ -115,7 +131,7 @@ table {
 
 .about-header {
   text-align: left;
-  font-size: 36px;
+  font-size: 0.75em;
   font-weight: 700;
   margin: 20px auto;
 }
@@ -175,7 +191,7 @@ table {
 }
 
 .chart-bullet {
-  margin: 5px 0;
+  margin: 10px 0;
   font-size: 16px;
 }
 
@@ -186,12 +202,11 @@ table {
 }
 
 #chart-metrics ul {
-  /* margin-top: 10px; */
   list-style: none;
 }
 
 .chart-metrics {
-  margin: 5px 0;
+  margin: 10px 0;
   font-size: 16px;
 }
 

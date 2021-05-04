@@ -12,7 +12,7 @@
 }
 
 .chart-bullet {
-  margin: 5px 0;
+  margin: 10px 0;
   font-size: 16px;
 }
 
@@ -23,12 +23,11 @@
 }
 
 #chart-metrics ul {
-  /* margin-top: 10px; */
   list-style: none;
 }
 
 .chart-metrics {
-  margin: 5px 0;
+  margin: 10px 0;
   font-size: 16px;
 }
 

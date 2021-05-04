@@ -1,3 +1,17 @@
+/* Document level  */
+
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 900px) {
+  html { font-size: 14px; }
+}
+@media (max-width: 400px) {
+  html { font-size: 12px; }
+}
+
+/* Document CSS */
 
 .header {
   width: 100%;
@@ -11,7 +25,7 @@
 }
 
 #app-header {
-  font-size: 54px;
+  font-size: 2rem;
   font-weight: 700;
   margin: 1vw 0;
   text-align: center;
@@ -19,7 +33,7 @@
 }
 
 .link {
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: 700;
   margin: 1vw 0;
   text-align: center;
@@ -33,6 +47,8 @@
   flex-direction: row;
   font-family: 'Montserrat', sans-serif;
 }
+
+
 
 #main {
   display: flex;
@@ -67,7 +83,7 @@
 
 .about-header {
   text-align: left;
-  font-size: 36px;
+  font-size: 0.75em;
   font-weight: 700;
   margin: 20px auto;
 }
