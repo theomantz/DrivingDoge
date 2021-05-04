@@ -31,7 +31,7 @@ router.get("/:query", async (req, res) => {
     let response = constructResponse(resData);
 
     queriesAll.forEach(q => {
-      response.data.available.push(q.query)
+      response.available.push(q.query)
     })
 
     return res.status(200).json(response);
@@ -56,15 +56,13 @@ function constructResponse(resData) {
 
   const response = {
     name: resData.query,
-    data: {
-      sentimentScore: resData.sentimentScore,
-      averageScore: resData.averageScore,
-      timeFrame: resData.params.post.time,
-      createdAt: resData.createdAt,
-      updatedAt: resData.updatedAt,
-      totalSubs: 0,
-      available: [],
-    },
+    sentimentScore: resData.sentimentScore,
+    averageScore: resData.averageScore,
+    timeFrame: resData.params.post.time,
+    createdAt: resData.createdAt,
+    updatedAt: resData.updatedAt,
+    totalSubs: 0,
+    available: [],
     value: 0,
     children: []
   }
@@ -79,10 +77,8 @@ function constructResponse(resData) {
       response.children.push({
 
         name: sub.shortLink,
-        data: {
-          averageScore: sub.averageScore,
-          sentimentScore: sub.sentimentScore
-        },
+        averageScore: sub.averageScore,
+        sentimentScore: sub.sentimentScore,
         value: 0,
         children: []
 
@@ -100,13 +96,11 @@ function constructResponse(resData) {
           let title = post.title
           response.children[index].children.push({
             name: title.replace(/\_/g, ' '),
-            data: {
-              sub: sub.shortLink,
-              upvotes: post.upvotes,
-              commentCount: post.commentCount,
-              averageScore: post.averageScore,
-              sentimentScore: post.sentimentScore
-            },
+            sub: sub.shortLink,
+            upvotes: post.upvotes,
+            commentCount: post.commentCount,
+            averageScore: post.averageScore,
+            sentimentScore: post.sentimentScore,
             value: (post.commentCount + post.upvotes)
           })
           
@@ -119,7 +113,7 @@ function constructResponse(resData) {
 
   response.value = value
 
-  response.data.totalSubs = totalSubs
+  response.totalSubs = totalSubs
 
   resData.totalSubs = totalSubs
 

@@ -17,14 +17,41 @@ class Treemap {
 
   appendPostInfo(d) {
     console.log(d)
-    let title = d.data.name
-    let sub = d.data.data
+    const { name, sub, 
+      upvotes, commentCount, 
+      averageScore } = d.data
+
+    const attr = [
+      `Title: ${name}`, 
+      `Subreddit: ${sub}`,
+      `Upvotes: ${upvotes}`, 
+      `Number of Comments: ${commentCount}`,
+      `Average Sentiment: ${averageScore}`
+    ]
+
+
+    d3.selectAll('.default-metrics').remove()
+    d3.selectAll('.chart-detailed-metrics,.chart-detailed-metrics-ul').remove()
+
+    d3.select("#detailed-metrics")
+      .append('ul')
+      .attr('class', 'chart-detailed-metrics-ul')
+      .selectAll('detailed-info')
+      .data(attr)
+      .enter()
+      .append('li')
+      .attr('class', 'chart chart-detailed-metrics')
+      .text((d) => {
+        return d
+      })
+
+
   }
 
   appendChartInfo() {
 
     const title = this.data.name.split('+')[0]
-    const { data } = this.data
+    const { data } = this
 
     const bullets = [
       "Each square is a post", 
@@ -77,11 +104,12 @@ class Treemap {
         
     d3.select("#detailed-metrics")
         .append('ul')
+        .attr('class', 'default-metrics')
         .selectAll('defaultDetails')
         .data(defaultData)
         .enter()
         .append('li')
-        .attr('class', 'chart chart-metrics')
+        .attr('class', 'chart default')
         .text((d) => {
           return d
         })
@@ -130,11 +158,9 @@ class Treemap {
         return d.y1 - d.y0;
       })
       .style("stroke", "black")
-      .style("fill", (t => d3.interpolateRdYlGn(t.data.data.averageScore)))
+      .style("fill", (t => d3.interpolateRdYlGn(t.data.averageScore)))
       .on("click", (d => {
-        debugger
         this.appendPostInfo(d);
-        return console.log(d);
       }))
 
     this.svg

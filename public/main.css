@@ -47,19 +47,33 @@ table {
 	border-spacing: 0;
 }
 
-header.header {
+.header {
   width: 100%;
   margin: 1vw auto;
+  padding: 0 10vw;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  justify-content: space-between;
 }
 
 #app-header {
   font-size: 54px;
   font-weight: 700;
-  margin: 1vw auto;
+  margin: 1vw 0;
   text-align: center;
   font-family: 'Arimo', sans-serif;
+}
+
+.link {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 1vw 0;
+  text-align: center;
+  font-family: 'Arimo', sans-serif;
+  text-decoration: none;
+  color: black;
 }
 
 #root {
@@ -92,7 +106,7 @@ header.header {
 }
 
 #about-section {
-  width: 60%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -189,6 +203,10 @@ header.header {
   font-size: 24px;
   font-weight: 700;
   padding-bottom: 10px;
+}
+
+.chart-detailed-metrics {
+  margin: 5px 0;
 }
 
 /* Treemap */

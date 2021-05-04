@@ -42,6 +42,10 @@
   padding-bottom: 10px;
 }
 
+.chart-detailed-metrics {
+  margin: 5px 0;
+}
+
 /* Treemap */
 
 #svg-title {

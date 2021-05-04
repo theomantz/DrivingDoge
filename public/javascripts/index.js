@@ -83,7 +83,7 @@ function drawTreemaps(dataSet, chartAreaWidth, chartAreaHeight) {
   const leftSideNav = d3.select('#left-sidenav')
     .attr('width', ( chartAreaWidth * 0.3 - margins.left) )
 
-  let assetOptions = dataSet.data.available
+  let assetOptions = dataSet.available
 
 
   const leftSelectInput = d3.select('#asset-input')
