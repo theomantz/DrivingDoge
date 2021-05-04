@@ -146,6 +146,7 @@ header.header {
   padding: 20px 40px 20px 5px;
 }
 
+
 /* Nav Containers dynamic rendering*/
 
 #about-chart h3 {
@@ -171,8 +172,23 @@ header.header {
 }
 
 #chart-metrics ul {
-  margin-top: 20px;
-  list-style: circle inside;
+  /* margin-top: 10px; */
+  list-style: none;
+}
+
+.chart-metrics {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+#detailed-metrics {
+  margin-top: 10px;
+}
+
+#detailed-metrics h3 {
+  font-size: 24px;
+  font-weight: 700;
+  padding-bottom: 10px;
 }
 
 /* Treemap */

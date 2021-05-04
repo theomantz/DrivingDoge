@@ -42,7 +42,10 @@ const QuerySchema = new Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment"
       }]
-    }
+    },
+  },
+  {
+    timestamps: true
   }
 )
 

@@ -11,10 +11,14 @@ class Treemap {
     this.width = width - ( MARGIN.left + MARGIN.right )
     this.data = data
     this.svg = svg
+
+    this.appendPostInfo = this.appendPostInfo.bind(this)
   }
 
   appendPostInfo(d) {
-
+    console.log(d)
+    let title = d.data.name
+    let sub = d.data.data
   }
 
   appendChartInfo() {
@@ -35,6 +39,10 @@ class Treemap {
       `Sentiment Score: ${data.sentimentScore}`,
       `Time Frame: ${data.timeFrame}`,
       `Total Subscribers: ${data.totalSubs}`
+    ]
+
+    const defaultData = [
+      "Select a chart area to view more detailed information"
     ]
     
     d3.select("#about-chart")
@@ -67,6 +75,16 @@ class Treemap {
           return d
         })
         
+    d3.select("#detailed-metrics")
+        .append('ul')
+        .selectAll('defaultDetails')
+        .data(defaultData)
+        .enter()
+        .append('li')
+        .attr('class', 'chart chart-metrics')
+        .text((d) => {
+          return d
+        })
   }
 
 
@@ -113,13 +131,11 @@ class Treemap {
       })
       .style("stroke", "black")
       .style("fill", (t => d3.interpolateRdYlGn(t.data.data.averageScore)))
-      .on("mouseover", function(d){
-        tooltip.text(`Post Title: ${d.data.name}`);
-        let styles = {'left':`${d.x0}px` , 'visibility':'visible', 'top':`${d.y1}px`}
-        return Object.entries(styles).forEach(([prop, val]) => tooltip.style(prop, val))
-        
-      })
-      .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+      .on("click", (d => {
+        debugger
+        this.appendPostInfo(d);
+        return console.log(d);
+      }))
 
     this.svg
       .selectAll("text")

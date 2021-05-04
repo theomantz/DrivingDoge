@@ -97,9 +97,9 @@ function constructResponse(resData) {
         if(post.commentCount) {
 
           value += (post.commentCount + post.upvotes)
-
+          let title = post.title
           response.children[index].children.push({
-            name: post.title.replace(/\_/, ' '),
+            name: title.replace(/\_/g, ' '),
             data: {
               sub: sub.shortLink,
               upvotes: post.upvotes,
@@ -118,7 +118,7 @@ function constructResponse(resData) {
   })
 
   response.value = value
-  console.log(totalSubs)
+
   response.data.totalSubs = totalSubs
 
   resData.totalSubs = totalSubs
