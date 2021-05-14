@@ -46,6 +46,7 @@
     "moment": "^2.29.1",
     "mongodb-extjson": "^2.1.5",
     "mongoose": "^5.12.7",
+    "newrelic": "^7.4.0",
     "spellchecker": "^3.7.1",
     "uuid": "^8.3.2",
     "validator": "^13.6.0",
