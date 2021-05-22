@@ -1,7 +1,7 @@
 {
   "name": "drivingdoge",
   "version": "1.0.0",
-  "description": "A data visualization app utilizing twitter developer api and azure sentiment analysis",
+  "description": "A data visualization app utilizing TensorFlow JS to analyze sentiment data and D3 JS to visualize",
   "main": "app.js",
   "scripts": {
     "webpack": "webpack --watch --mode=development",

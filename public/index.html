@@ -6,8 +6,27 @@
     <link rel="icon" href="favicon.ico?" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Arimo&family=Montserrat&display=swap" rel="stylesheet">
+
+    <!-- Local JS and CSS -->
     <link rel="stylesheet" href="./main.css">
     <script type="text/javascript" src='./bundle.js'></script>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+
+    <!-- jQuery Modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+
+    <!-- Open Modal on Load -->
+    
+    <script type="text/javascript">
+      $(window).on('load', function() {
+        $('#splash').modal('show')
+      })
+    </script>
+
+    <!-- D3 JS -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-color.v2.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
@@ -17,15 +36,21 @@
   <body>
     <header class="header">
 
-      <a 
+      
+      <h1 id="app-header">[dd]: driving doge</h1>
+
+
+      <div class="nav-section">
+
+        <a 
         href="#about-section"
-        class="about link">why</a>
-
-        <h1 id="app-header">[dd]: driving doge</h1>
-
-      <a 
+        class="about link">About this Project</a>
+        
+        <a 
         href="#who-section"
-        class="who link">who</a>
+        class="who link">About the Developer</a>
+
+      </div>
 
     </header>
     <div id='svg-title'></div>
@@ -52,23 +77,59 @@
         </div>
 
       </div>
+
       <div id='main'>
 
 
         <div id="svg-container"></div>
 
-        <div id="about-section">
-          <h1 class="about-header">About</h1>
-          <p class="intro-paragraph">
-             The meteoric rise of Dogecoin during the early months of 2021 investors of all types puzzled. How could such a objectively pointless asset, a meme currency, acheive a reasonable value? The desire to uncover, what drives the price of Doge, and other assets gave rise to this project. 
-          </p>
-          <p class="technologies-paragraph">
-            What is attempted here is sentiment analysis of recent Reddit posts, relevant to each asset found using the site's own search engine. 
+        <div id='splash' class="modal">
 
-            The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow ML Model trained on IMDB movie ratings. 
-          </p>
-        </div>
-
+          <div id="about-section">
+            <h1 class="about-header">What is Sentiment Analysis?</h1>
+            <p class="about-paragraph">
+              Sentiment analysis is the use of applying language processing methods to systematically extract or quantify the affective state or subjective information within the language.  
+            </p>
+            <span class="link-span">
+              You can read more about sentiment analysis
+              <a 
+              href="https://en.wikipedia.org/wiki/Sentiment_analysis" 
+              target="_blank"
+              class="about-link"
+              >
+              here
+              </a>
+            </span>
+            <h1 class="about-header">What is Happening Here?</h1>
+            <p class="about-paragraph">
+              What is attempted here is sentiment analysis of Reddit posts, relevant to the asset shown in the dropdown, or the header. The relevant subreddits are found through Reddit's search functionality. The posts are parsed using web-scraping. 
+            </p>
+            <span class="link-span">
+              You can read more about web scraping
+              <a 
+              href="https://en.wikipedia.org/wiki/Web_scraping" 
+              target="_blank"
+              class="about-link"
+              >
+              here
+              </a>
+            </span>
+            <h1 class="about-header">What Technologies are Involved?</h1>
+            <p class="about-paragraph">
+              The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow ML Model trained on IMDB movie ratings. 
+            </p>
+            <span class="link-span">
+              You can read more about this particular model
+                <a 
+                href="https://www.tensorflow.org/tutorials/keras/text_classification_with_hub" 
+                target="_blank"
+                class="about-link"
+                >
+                here
+              </a>
+            </span>
+          </div>
+        </div>   
       </div>
       <div id="right-sidenav">
 

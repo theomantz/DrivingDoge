@@ -73,12 +73,20 @@ html {
 }
 
 #app-header {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
   margin: 1vw 0;
   text-align: center;
   font-family: 'Arimo', sans-serif;
 }
+
+.nav-section{
+  display: flex;
+  flex-direction: row;
+  width: 40%;
+  justify-content: space-between;
+}
+
 
 .link {
   font-size: 1rem;
@@ -111,15 +119,6 @@ html {
   width: 60%;
 }
 
-/* Left side nav static */
-
-#left-sidenav {
-  width: 20%;
-  display: flex;
-  flex-direction: column;
-  margin: 50px auto;
-  padding: 20px 5px 20px 40px;
-}
 
 #about-section {
   width: 100%;
@@ -130,11 +129,41 @@ html {
 }
 
 .about-header {
-  text-align: left;
-  font-size: 0.75em;
+  text-align: center;
+  font-size: 1.2em;
   font-weight: 700;
   margin: 20px auto;
 }
+
+.about-paragraph {
+  font-size: 1rem;
+  line-height: 1.2rem;
+  margin: 1rem;
+  text-align: left;
+}
+
+.link-span {
+  color: black;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.about-link {
+  color: black;
+}
+
+/* Left side nav static */
+
+#left-sidenav {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto;
+  padding: 20px 5px 20px 40px;
+}
+
 
 .user-options-paragraph {
   margin: 10px 0;

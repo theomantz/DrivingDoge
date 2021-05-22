@@ -16,7 +16,7 @@ class Treemap {
   }
 
   appendPostInfo(d) {
-    console.log(d)
+
     const { name, sub, 
       upvotes, commentCount, 
       averageScore } = d.data
