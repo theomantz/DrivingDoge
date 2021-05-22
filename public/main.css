@@ -285,6 +285,29 @@ html {
   margin: auto 5px;
 }
 
+.social-media {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  position: sticky;
+  height: 10%;
+}
+
+.social {
+  height: 5rem;
+  width: 5rem;
+}
+
+.fab, .far {
+  height: 100%;
+  width: 100%;
+}
+
+.icon {
+  height: 5rem;
+  width: 5rem;
+}
+
 rect {
   cursor: pointer;
 }
