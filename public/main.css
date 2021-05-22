@@ -119,6 +119,12 @@ html {
   width: 60%;
 }
 
+#modal-header {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 
 #about-section {
   width: 100%;
@@ -152,6 +158,14 @@ html {
 
 .about-link {
   color: black;
+}
+
+#modal-close {
+  padding: 1rem;
+  margin: 1rem auto;
+  align-self: center;
+  border-radius: 1rem;
+  background-color: rgb(124, 255, 85);
 }
 
 /* Left side nav static */

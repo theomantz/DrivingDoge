@@ -19,11 +19,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 
     <!-- Open Modal on Load -->
-    
+
     <script type="text/javascript">
+
       $(window).on('load', function() {
-        $('#splash').modal('show')
-      })
+        $('#splash').modal({
+          showClose: false,
+          escapeClose: false,
+          clickClose: false,
+        })
+      });
+      
     </script>
 
     <!-- D3 JS -->
@@ -32,6 +38,18 @@
     <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script>
     <title>dd</title>
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDL26XS3SV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-EDL26XS3SV');
+    </script>
+
   </head>
   <body>
     <header class="header">
@@ -43,12 +61,10 @@
       <div class="nav-section">
 
         <a 
-        href="#about-section"
+        href="#splash"
+        rel="modal:open"
         class="about link">About this Project</a>
         
-        <a 
-        href="#who-section"
-        class="who link">About the Developer</a>
 
       </div>
 
@@ -85,7 +101,23 @@
 
         <div id='splash' class="modal">
 
+          <h1 id="modal-header">driving doge</h1>
+
           <div id="about-section">
+            <h1 class="about-header">What is Driving Doge?</h1>
+            <p class="about-paragraph">
+              What is attempted here is sentiment analysis of Reddit posts, relevant to the asset shown in the dropdown, or the header. The relevant subreddits are found through Reddit's search functionality. The posts are parsed using web-scraping. 
+            </p>
+            <span class="link-span">
+              You can read more about web scraping
+              <a 
+              href="https://en.wikipedia.org/wiki/Web_scraping" 
+              target="_blank"
+              class="about-link"
+              >
+              here
+              </a>
+            </span>
             <h1 class="about-header">What is Sentiment Analysis?</h1>
             <p class="about-paragraph">
               Sentiment analysis is the use of applying language processing methods to systematically extract or quantify the affective state or subjective information within the language.  
@@ -94,20 +126,6 @@
               You can read more about sentiment analysis
               <a 
               href="https://en.wikipedia.org/wiki/Sentiment_analysis" 
-              target="_blank"
-              class="about-link"
-              >
-              here
-              </a>
-            </span>
-            <h1 class="about-header">What is Happening Here?</h1>
-            <p class="about-paragraph">
-              What is attempted here is sentiment analysis of Reddit posts, relevant to the asset shown in the dropdown, or the header. The relevant subreddits are found through Reddit's search functionality. The posts are parsed using web-scraping. 
-            </p>
-            <span class="link-span">
-              You can read more about web scraping
-              <a 
-              href="https://en.wikipedia.org/wiki/Web_scraping" 
               target="_blank"
               class="about-link"
               >
@@ -128,8 +146,13 @@
                 here
               </a>
             </span>
+            <p id="modal-close">
+              <a href="#splash" rel="modal:close" class="link">
+                Close
+              </a>
+            </p>
           </div>
-        </div>   
+        </div>
       </div>
       <div id="right-sidenav">
 
