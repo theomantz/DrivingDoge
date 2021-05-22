@@ -122,6 +122,9 @@ class Treemap {
 
   render() {
 
+    console.log(this.height)
+    console.log(this.width)
+    
     this.appendChartInfo()
     
     const tooltip = d3

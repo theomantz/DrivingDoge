@@ -298,14 +298,10 @@ html {
   width: 5rem;
 }
 
-.fab, .far {
+.icon {
   height: 100%;
   width: 100%;
-}
-
-.icon {
-  height: 5rem;
-  width: 5rem;
+  color: black;
 }
 
 rect {
