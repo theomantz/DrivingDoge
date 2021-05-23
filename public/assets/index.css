@@ -1,7 +1,19 @@
+/* Variables */
+
+:root {
+  --blue-crayola: #2176ff;
+  --vermilion: #e03616;
+  --blue-jeans: #33a1fd;
+  --rich-black: #040303;
+  --emerald: #62c370;
+}
+
 /* Document level  */
 
 html {
   font-size: 16px;
+  color: var(--rich-black);
+  font-family: 'Arimo', sans-serif;
 }
 
 @media (max-width: 900px) {
@@ -11,17 +23,23 @@ html {
   html { font-size: 12px; }
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
 /* Document CSS */
 
 .header {
   width: 100%;
-  margin: 1vw auto;
+  margin: 1rem auto;
   padding: 0 10vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 #app-header {
@@ -46,7 +64,7 @@ html {
   text-align: center;
   font-family: 'Arimo', sans-serif;
   text-decoration: none;
-  color: black;
+  color: var(--rich-black);
 }
 
 #root {
@@ -55,12 +73,11 @@ html {
   font-family: 'Montserrat', sans-serif;
 }
 
-
-
 #main {
   display: flex;
   flex-direction: column;
   width: 65%;
+  height: 65%;
   align-items: center;
 }
 
@@ -135,3 +152,70 @@ html {
   padding: 20px 40px 20px 5px;
 }
 
+
+/* Modal */
+
+#modal-header {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.about-header {
+  font-size: 1rem;
+}
+
+.about-paragraph {
+  font-size: 1rem;
+  line-height: 1.3rem;
+  margin: 1rem auto;
+}
+
+.link-span {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.about-link {
+  color: var(--rich-black);
+}
+
+#modal-close {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--emerald);
+  transition: all 0.5s;
+}
+
+#modal-close:hover {
+  background-color: var(--vermilion);
+}
+
+.close-link {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+}
+
+.social-media {
+  position: absolute;
+  top: calc(100vh - 85px);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  background-image: linear-gradient(rgba(255, 255, 255, 0), rgb(255, 255, 255))
+}
+
+.icon {
+  color: var(--emerald);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.5s;
+}
+
+.icon:hover {
+  background-color: var(--blue-crayola);
+}

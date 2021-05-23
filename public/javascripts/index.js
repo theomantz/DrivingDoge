@@ -4,15 +4,19 @@ import Treemap from './treemap'
 import fetchData from './fetch';
 
 document.addEventListener("DOMContentLoaded", function () {
+  
   const root = document.getElementById("root");
   const input = document.getElementById("asset-input");
 
   
 
   let windowWidth = window.innerWidth;
-  let windowHeight = window.innerHeight;
+  let windowHeight = window.innerHeight * 0.75;
+
+  console.log(windowHeight)
 
   init((windowWidth), (windowHeight))
+
 
   input.addEventListener('change', (e) => {
     newTree(e.currentTarget.value, windowWidth, windowHeight)
@@ -26,6 +30,8 @@ async function newTree(value, width, height) {
   clearData()
 
   const newData = await fetchData(value)
+
+  console.log(height)
 
   drawTreemaps(newData, width, height)
 
