@@ -193,21 +193,22 @@ body {
 }
 
 #modal-close {
+  margin-top: 2rem;
+}
+
+.close-link {
   padding: 1rem;
   border-radius: 0.5rem;
   background-color: var(--emerald);
   transition: all 0.5s;
-}
-
-#modal-close:hover {
-  background-color: var(--vermilion);
-}
-
-.close-link {
   font-size: 1.2rem;
   font-weight: 700;
   text-decoration: none;
   color: white;
+}
+
+.close-link:hover {
+  background-color: var(--vermilion);
 }
 
 .social-media {

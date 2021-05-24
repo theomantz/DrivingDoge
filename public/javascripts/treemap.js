@@ -147,6 +147,7 @@ class Treemap {
   }
 
   hideTitle(d) {
+    
     const { data } = d
 
     const title = document.getElementById(`${data.sub}`);
