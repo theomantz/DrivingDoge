@@ -22,11 +22,11 @@ class Treemap {
       averageScore } = d.data
 
     const attr = [
-      {title: `Title:`, value: `${name.slice(0, 13)}...`}, 
+      {title: `Title:`, value: `${name.slice(0, 10)}...`}, 
       {title: `Subreddit:`, value: `${sub}`},
       {title: `Upvotes:`, value: `${upvotes}`}, 
       {title: `Number of Comments:`, value: `${commentCount}`},
-      {title: `Average Sentiment:`, value: `${averageScore.toFixed(4)}`}
+      {title: `Average Sentiment:`, value: `${averageScore ? averageScore.toFixed(4) : 'undefined'}`}
     ]
 
 
@@ -147,7 +147,7 @@ class Treemap {
   }
 
   hideTitle(d) {
-    
+
     const { data } = d
 
     const title = document.getElementById(`${data.sub}`);
