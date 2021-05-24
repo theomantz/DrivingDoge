@@ -136,11 +136,27 @@ class Treemap {
         })
   }
 
+  showTitle(d) {
+
+    const { data } = d
+
+    const title = document.getElementById(`${data.sub}`)
+
+    title.classList.add('visible')
+
+  }
+
+  hideTitle(d) {
+    const { data } = d
+
+    const title = document.getElementById(`${data.sub}`);
+    
+    title.classList.remove('visible')
+
+  }
+
 
   render() {
-
-    console.log(this.height)
-    console.log(this.width)
     
     this.appendChartInfo()
     
@@ -186,6 +202,12 @@ class Treemap {
       .on("click", (d => {
         this.appendPostInfo(d);
       }))
+      .on('mouseover', (d => {
+        this.showTitle(d)
+      }))
+      .on('mouseout', (d => {
+        this.hideTitle(d)
+      }))
 
     this.svg
       .selectAll("text")
@@ -197,7 +219,7 @@ class Treemap {
       .enter()
       .append("text")
       .attr("x", function (d) {
-        return d.x0 + (d.x0 + d.x1)/2;
+        return (d.x0);
       }) // +10 to adjust position (more right)
       .attr("y", function (d) {
         return d.y0 + 20;
@@ -206,7 +228,8 @@ class Treemap {
         return d.name;
       })
       .text((d) => d.data.name)
-      .attr("class", "subreddit-text")
+      .attr('class', d => `subreddit-text`)
+      .attr("id", d => `${d.data.name}`)
 
 
   }

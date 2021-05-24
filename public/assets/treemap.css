@@ -77,6 +77,11 @@ rect {
   border-radius: 0.5rem;
   height: fit-content;
   width: fit-content;
+  visibility: hidden
+}
+
+.subreddit-text.visible {
+  visibility: visible;
 }
 
 .metric-cell {
