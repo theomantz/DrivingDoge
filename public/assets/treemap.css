@@ -61,8 +61,25 @@
   align-items: center;
   justify-content: center;
   margin: auto 5px;
+  width: fit-content;
+  height: fit-content;
 }
 
 rect {
   cursor: pointer;
+}
+
+.subreddit-text {
+  color: var(--rich-black);
+  font-size: 1rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  height: fit-content;
+  width: fit-content;
+}
+
+.metric-cell {
+  padding: 0.25rem 0;
+  padding-right: 0.5rem;
 }

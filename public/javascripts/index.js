@@ -68,26 +68,29 @@ function drawTreemaps(dataSet, chartAreaWidth, chartAreaHeight) {
 
   let titleText = dataSet.name.split('+')[2]
 
-  const title = d3.select('#svg-title')
+  d3.selectAll('#svg-title').remove()
+
+  const title = d3.select('#svg-container')
     .append('h1')
-    .attr('class', 'title title')
+    .attr('id', 'svg-title')
     .text(`$${titleText.toUpperCase()}`)
 
   const svg = d3.select('#svg-container')
     .append('svg')
-    .attr('width', (chartAreaWidth * 0.6) + margins.left + margins.right)
+    .attr('width', (chartAreaWidth * 0.55) + margins.left + margins.right)
     .attr('height', chartAreaHeight + margins.top + margins.bottom)
+    .attr('class', 'svg')
     .append('g')
     .attr('transform',
-    "translate(" + margins.left + "," + margins.top + ")");
+    "translate(" + (margins.left - margins.right) + "," + ( margins.top - margins.bottom) + ")");
 
 
-  const treemap = new Treemap(dataSet, (chartAreaWidth * 0.6), chartAreaHeight, svg)
+  const treemap = new Treemap(dataSet, (chartAreaWidth * 0.55), chartAreaHeight, svg)
 
   treemap.render()
 
   const leftSideNav = d3.select('#left-sidenav')
-    .attr('width', ( chartAreaWidth * 0.3 - margins.left) )
+    
 
   let assetOptions = dataSet.available
 

@@ -22,25 +22,31 @@ class Treemap {
       averageScore } = d.data
 
     const attr = [
-      `Title: ${name}`, 
-      `Subreddit: ${sub}`,
-      `Upvotes: ${upvotes}`, 
-      `Number of Comments: ${commentCount}`,
-      `Average Sentiment: ${averageScore}`
+      {title: `Title:`, value: `${name.slice(0, 13)}...`}, 
+      {title: `Subreddit:`, value: `${sub}`},
+      {title: `Upvotes:`, value: `${upvotes}`}, 
+      {title: `Number of Comments:`, value: `${commentCount}`},
+      {title: `Average Sentiment:`, value: `${averageScore.toFixed(4)}`}
     ]
 
 
     d3.selectAll('.default-metrics').remove()
-    d3.selectAll('.chart-detailed-metrics,.chart-detailed-metrics-ul').remove()
+    d3.selectAll('.detailed-metrics-table').remove()
 
     d3.select("#detailed-metrics")
-      .append('ul')
-      .attr('class', 'chart-detailed-metrics-ul')
-      .selectAll('detailed-info')
+      .append('table')
+      .attr('class', 'detailed-metrics-table')
+      .append('tbody')
+      .selectAll('detailedMetrics')
       .data(attr)
       .enter()
-      .append('li')
-      .attr('class', 'chart chart-detailed-metrics')
+      .append('tr')
+      .attr('class', 'chart chart-metrics detailed')
+      .selectAll('tr')
+      .data(d => Object.values(d))
+      .enter()
+      .append('td')
+      .attr('class', 'chart metric-cell')
       .text((d) => {
         return d
       })
@@ -63,23 +69,27 @@ class Treemap {
 
     const date = new Date(data.createdAt).toDateString()
     
+   
+
     const chartData = [
-      `Total Engagement: ${data.value}`,
-      `Total Subscribers: ${data.totalSubs}`,
-      `Average Sentiment: ${data.averageScore}`,
-      `Sentiment Score: ${data.sentimentScore}`,
-      `Created: ${date}`,
-      `Time Frame: ${data.timeFrame}`,
+      {Title: "Total Engagement:", value: `${data.value}`},
+      {Title: "Total Subscribers:", value: `${data.totalSubs}`},
+      {Title: "Average Sentiment:", value: `${data.averageScore}`},
+      {Title: "Sentiment Score:", value: `${data.sentimentScore}`},
+      {Title: "Created:", value: `${date}`},
+      {Title: "Time Frame:", value: `${data.timeFrame}`},
     ]
 
     const defaultData = [
       "Select a chart area to view more detailed information"
     ]
-    
+
+    let chartDirectionText = window.innerWidth < 1300 ? 'below' : 'to the right'
+
     d3.select("#about-chart")
       .append("p")
       .text(
-        `The chart shown to the right is a treemap representation of Reddit engagement and sentiment surrounding ${title}.`
+        `The chart shown ${chartDirectionText} is a treemap representation of Reddit engagement and sentiment surrounding ${title}.`
       )
       .attr('class', 'chart');
 
@@ -96,13 +106,20 @@ class Treemap {
         })
 
     d3.select('#chart-metrics')
-        .append('ul')
+        .append('table')
+        .attr('class', 'chart-metrics-table')
+        .append('tbody')
         .selectAll('chartData')
         .data(chartData)
         .enter()
-        .append('li')
+        .append('tr')
         .attr('class', 'chart chart-metrics')
-        .text((d) => {
+        .selectAll('tr')
+        .data(d => Object.values(d))
+        .enter()
+        .append('td')
+        .attr('class', 'metric-cell')
+        .text(d => {
           return d
         })
         
@@ -189,8 +206,7 @@ class Treemap {
         return d.name;
       })
       .text((d) => d.data.name)
-      .attr("font-size", "24px")
-      .attr("fill", "black");
+      .attr("class", "subreddit-text")
 
 
   }
