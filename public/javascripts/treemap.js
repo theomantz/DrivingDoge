@@ -57,6 +57,7 @@ class Treemap {
   appendChartInfo() {
 
     const title = this.data.name.split('+')[0]
+    
     const { data } = this
 
     const bullets = [
@@ -160,18 +161,9 @@ class Treemap {
   render() {
     
     this.appendChartInfo()
-    
-    const tooltip = d3
-      .select("#svg-container")
-      .append("div")
-      .style("position", "absolute")
-      .style("z-index", "10")
-      .style("visibility", "hidden")
-      .style("background", "white")
 
 
     const root = d3.hierarchy(this.data)
-
     
     d3.treemap()
       .size([this.width, this.height])

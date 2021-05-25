@@ -67,13 +67,20 @@ function drawTreemaps(dataSet, chartAreaWidth, chartAreaHeight) {
   }
 
   let titleText = dataSet.name.split('+')[2]
+  let titleSubtext = dataSet.name.split('+')[0]
 
   d3.selectAll('#svg-title').remove()
+  d3.selectAll('#svg-subtitle').remove()
 
   const title = d3.select('#svg-container')
     .append('h1')
     .attr('id', 'svg-title')
     .text(`$${titleText.toUpperCase()}`)
+  
+  const subTitle = d3.select('#svg-title')
+    .append('h3')
+    .attr('id', 'svg-subtitle')
+    .text(`${titleSubtext}`)
 
   const svg = d3.select('#svg-container')
     .append('svg')
