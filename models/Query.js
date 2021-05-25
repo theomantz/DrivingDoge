@@ -8,6 +8,9 @@ const QuerySchema = new Schema(
       type: String,
       require: true,
     },
+    rawRequest: {
+      type: Object,
+    },
     params: {
       type: Object,
       require: false,

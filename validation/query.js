@@ -1,30 +1,23 @@
 const validText = require('./valid-text');
 
-const cryptoTickers = {
-  'btc':'bitcoin', 'eth':'ethereum', 
-  'bnb': 'binance coin', 'xrp':'ripple', 'usdt':'tether', 
-  'ada':'cardano', 'doge':'dogecoin', 'dot':'polkadot', 
-  'uni':'uniswap', 'ltc':'litecoin', 'link':'chainlink',
-  'neo':'neo'
-}
-
-const stockTickers = {
-  'appl':'apple', 'msft':'microsoft', 'amzn':'amazon', 'goog':'google', 'googl':'google', 'fb':'facebook', 'tsla':'tesla'
-}
-
-const assetClasses = [
-  'crypto', 'cryptocurrency', 'stocks', 'bonds', 'index fund', 'gold' 
-]
+const assets = require('../config/assets')
 
 // Validator will validate and normalize query
 
-module.exports = function validateQuery(query) {
+function validateQuery(query) {
+
+  const {
+    cryptoTickers,
+    stockTickers,
+    assetClasses
+  } = assets
+
   let errors = {}
   let asset = ''
 
   query = query
     .trim()
-    .toLowerCase()
+    .toUpperCase()
 
   query = validText(query) ? query : '';
 
@@ -71,3 +64,5 @@ module.exports = function validateQuery(query) {
   }
 
 }
+
+module.exports = validateQuery;

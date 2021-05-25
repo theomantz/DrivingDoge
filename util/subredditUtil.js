@@ -50,8 +50,11 @@ function parseSubreddits(html, queryObj) {
 
 
   $("div.ListingLayout-outerContainer div > a")
-    .each((index, element) => {
+  
+    .each((i, element) => {
+
       const shortLink = $(element).attr('href')
+      
       if (shortLink.slice(0,3) === '/r/' &&
         promises.length < limit ) {
 
@@ -59,6 +62,7 @@ function parseSubreddits(html, queryObj) {
         const subCount = parseSubCount(subCountString)
         const descriptionNode = $(element).children('div').toArray()[1]
         try {
+          
           const subredditDoc = Subreddit.findOneAndUpdate(
             {
               shortLink: shortLink

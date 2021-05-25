@@ -36,7 +36,7 @@ const SubredditSchema = new Schema(
       ref: 'Comment'
     }],
     queries: [{
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Query"
     }]
   },

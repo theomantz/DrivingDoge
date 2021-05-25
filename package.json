@@ -18,8 +18,8 @@
     "Sentiment",
     "Social",
     "Media",
-    "Twitter",
-    "Azure"
+    "Reddit",
+    "TensorFlow"
   ],
   "author": "Theo Mantz",
   "license": "ISC",

@@ -56,9 +56,12 @@ const PostSchema = new Schema(
       required: false
     },
     queries: [{
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Query"
     }],
+    JSONPost: {
+      type: Object
+    }
   },
   {
     timestamps: true,

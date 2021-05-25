@@ -126,7 +126,7 @@ body {
   flex-direction: row;
   width: fit-content;
   height: 65%;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .svg {
