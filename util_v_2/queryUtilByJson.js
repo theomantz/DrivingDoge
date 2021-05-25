@@ -167,9 +167,10 @@ async function constructPosts(subReddit, queryDocument) {
         url: $('.search-title.may-blank', el).attr('href'),
         author: $('.search-author .author.may-blank', el).text(),
       })
-    } 
+    }
 
-    let postJSON = await axios.get()
+    let URL = `${$('.search-title.may-blank').attr('href')}.json`
+    let postJSON = await axios.get(URL)
 
   }
 
