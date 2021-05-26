@@ -204,7 +204,7 @@ body {
 
 
 #right-sidenav {
-  width: 40%;
+  min-width: 40%;
   display: flex;
   flex-direction: column;
   margin: 50px auto;
@@ -257,6 +257,10 @@ body {
 
 .close-link:hover {
   background-color: var(--vermilion);
+}
+
+.social-media-container {
+  margin-bottom: 1rem;
 }
 
 .social-media {
@@ -346,7 +350,7 @@ body {
   }
 
   #right-sidenav {
-    width: 50%;
+    min-width: 50%;
   }
 }
 /* Nav Containers dynamic rendering*/
@@ -384,6 +388,7 @@ body {
 
 #detailed-metrics {
   margin-top: 10px;
+  width: 100%;
 }
 
 #detailed-metrics h3 {
@@ -394,6 +399,10 @@ body {
 
 .chart-detailed-metrics {
   margin: 5px 0;
+}
+
+.chart.default {
+  width: 40%;
 }
 
 /* Treemap */

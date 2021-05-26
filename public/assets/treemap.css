@@ -33,6 +33,7 @@
 
 #detailed-metrics {
   margin-top: 10px;
+  width: 100%;
 }
 
 #detailed-metrics h3 {
@@ -43,6 +44,10 @@
 
 .chart-detailed-metrics {
   margin: 5px 0;
+}
+
+.chart.default {
+  width: 40%;
 }
 
 /* Treemap */

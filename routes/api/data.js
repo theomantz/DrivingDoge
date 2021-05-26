@@ -6,7 +6,7 @@ const validateQuery = require('../../validation/query')
 
 
 router.get("/:query", async (req, res) => {
-
+  
   try {
     const { errors, isValid, asset } = validateQuery(req.params.query);
 

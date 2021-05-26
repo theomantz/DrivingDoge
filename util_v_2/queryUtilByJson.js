@@ -61,12 +61,40 @@ async function generateQuery(queryRequestObject) {
     options
  );
 
- let queryDocument = new Query({
-   query: asset,
-   rawRequest: queryRequestObject,
- })
+ let cutoffDate
+ let searchParams
+ if(time === 'hour') {
+   cutoffDate = new Date(Date.now() - 1000 * 3600);
+ } else if (time === 'day') {
+   cutoffDate = Date.now() - 1000 * 3600 * 24;
+ } else if (time === 'week') {
+   cutoffDate = Date.now() - 1000 * 3600 * 24 * 7;
+ } else if (time === 'month') {
+   cutoffDate = Date.now() - 1000 * 3600 * 24 * 28;
+ }
 
- queryDocument = await queryDocument.save()
+ let queryDocument = await Query.findOne({
+   query: asset, 
+   createdAt: { $gte: cutoffDate }, 
+   params: { 
+     params: { 
+      time: time,
+      sort: sort
+    }}
+  })
+
+ if(!queryDocument) {
+
+   queryDocument = new Query({
+     query: asset,
+     params: queryRequestObject,
+   })
+
+   queryDocument = await queryDocument.save()
+   
+ }
+ 
+
 
  await constructSubreddits(queryDocument, searchHTML)
   
@@ -74,7 +102,7 @@ async function generateQuery(queryRequestObject) {
 
 async function constructSubreddits(queryDocument, searchHTML) {
 
-  const { rawRequest: {
+  const { params: {
     params: { 
       subreddit: {
         count
@@ -93,8 +121,6 @@ async function constructSubreddits(queryDocument, searchHTML) {
     const meta = $('.search-result-meta', el)
     const body = $('.search-result-body', el)
 
-    console.log('line 98', el)
-
     const shortLink = $(".search-subreddit-link", meta).text();
     const subCountString = $(".search-subscribers", meta).text()
     const subCount = parseInt(subCountString.split('members')[0].replace(',', ''))
@@ -109,14 +135,17 @@ async function constructSubreddits(queryDocument, searchHTML) {
         description: $(body).text()
       })
 
+      subredditDocument = await subredditDocument.save()
+
     }
 
-    subRedditDocument.subCount = subCount
-    subRedditDocument.queries.push(queryDocument.id)
+    subredditDocument.subCount = subCount
+    subredditDocument.queries.push(queryDocument.id)
     
     let subReddit = await subredditDocument.save()
 
-    let queryDoc = await queryDocument.subreddits.push(subReddit.id).save()
+    queryDocument.subreddits.push(subReddit.id)
+    let queryDoc = await queryDocument.save()
 
     
 
@@ -131,15 +160,17 @@ async function constructPosts(subReddit, queryDocument) {
   const {
     queryString,
     params: {
-      post: {
-        sort,
-        time,
-        count
-      }
+      params: {
+        post: {
+          sort,
+          time,
+          count
+        }
+      },
     }
   } = queryDocument
   
-  let URL = `${subReddit.longLink}/search/?q=${queryString}&restrict_sr=on&sort=${sort}&t=${time}`
+  let URL = `${subReddit.longLink}search/?q=${queryString}&restrict_sr=on&sort=${sort}&t=${time}`
 
   
   let subRedditHTML = await axios.get(URL)
@@ -169,9 +200,16 @@ async function constructPosts(subReddit, queryDocument) {
       })
     }
 
-    let URL = `${$('.search-title.may-blank').attr('href')}.json`
-    let postJSON = await axios.get(URL)
+    let postURL = `${$('.search-title.may-blank').attr('href')}.json`
 
+    let postJSON = await axios.get(postURL)
+    post.JSONpost = postJson
+    post.save()
+    
+    const postTitleJSON = postJSON[0].data
+
+
+    
   }
 
 

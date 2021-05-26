@@ -213,10 +213,10 @@ class Treemap {
       .append("text")
       .attr("x", function (d) {
         return (d.x0);
-      }) // +10 to adjust position (more right)
+      })
       .attr("y", function (d) {
         return d.y0 + 20;
-      }) // +20 to adjust position (lower)
+      })
       .text(function (d) {
         return d.name;
       })
