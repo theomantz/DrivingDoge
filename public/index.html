@@ -136,19 +136,51 @@
 
           <div id="about-section">
             <h1 class="about-header">What is Driving Doge?</h1>
-            <p class="about-paragraph">
-              What is attempted here is sentiment analysis of Reddit posts, relevant to the asset shown in the dropdown, or the header. The relevant subreddits are found through Reddit's search functionality. The posts are parsed using web-scraping. 
+            <p class="about-paragraph top">
+              DrivingDoge is a sentiment analysis and visualization app.
+              <br>
+              What is shown here is a treemap representation of Reddit user sentiment.
+              <ul class="summary-bullets">
+                <li class="top-level-bullets">
+                  Each rectangle is a post. 
+                </li>
+                <li class="top-level-bullets">
+                  Each group of rectangles is a subreddit. 
+                </li>
+                <li class="top-level-bullets">
+                  Post size is relative to engagement. 
+                  <ul class="second-level-list">
+                    <li class="second-level-bullets">
+                      Engagement is the sum of comments and upvotes
+                    </li>
+                  </ul>
+                </li>
+                <li class="top-level-bullets">
+                  The color of each rectangle is relative to its sentiment score
+                  <ul class="second-level-list">
+                    <li class="second-level-bullets color">
+                      <span class='green'>
+                        Green
+                      </span> is positive
+                    </li>
+                    <li class="second-level-bullets color">
+                      <span class="yellow">
+                        Yellow
+                      </span> is neutral
+                    </li>
+                    <li class="second-level-bullets color">
+                      <span class="red">
+                        Red
+                      </span> is negative
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </p>
-            <span class="link-span">
-              You can read more about web scraping
-              <a 
-              href="https://en.wikipedia.org/wiki/Web_scraping" 
-              target="_blank"
-              class="about-link"
-              >
-              here
-              </a>
-            </span>
+            <figure class="color-scale-image">
+              <img alt='color-scale' src='./assets/RdYlGn.png' class="color-scale"/>
+              <figcaption class="color-scale-caption">Color Scale</figcaption>
+            </figure>
             <h1 class="about-header">What is Sentiment Analysis?</h1>
             <p class="about-paragraph">
               Sentiment analysis is the use of applying language processing methods to systematically extract or quantify the affective state or subjective information within the language.  
@@ -165,10 +197,10 @@
             </span>
             <h1 class="about-header">What Technologies are Involved?</h1>
             <p class="about-paragraph">
-              The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow ML Model trained on IMDB movie ratings. 
+              The backend is a basic NodeJS server, which performs sentiment analysis using a TensorFlow Machine Learning Model trained on IMDB movie ratings. The Reddit posts are scraped using Cheerio.JS and the Reddit Public API.
             </p>
             <span class="link-span">
-              You can read more about this particular model
+              You can read more about this machine learning model
                 <a 
                 href="https://www.tensorflow.org/tutorials/keras/text_classification_with_hub" 
                 target="_blank"
