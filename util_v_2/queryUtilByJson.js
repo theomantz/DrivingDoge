@@ -75,7 +75,7 @@ async function generateQuery(queryRequestObject) {
 
  let queryDocument = await Query.findOne({
    query: asset, 
-   createdAt: { $gte: cutoffDate }, 
+   createdAt: { $gte: cutoffDate.toISOString() }, 
    params: { 
      params: { 
       time: time,
