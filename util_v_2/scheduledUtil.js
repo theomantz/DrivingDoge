@@ -20,21 +20,21 @@ const generateQuery = require('./queryUtilByJson')
 const defaultSearch = {
   queryString: "DOGE",
   sort: "relevance",
-  time: "hour",
+  time: "week",
   subreddit: {
     sort: "relevance",
-    time: "hour",
-    count: 2,
+    time: "week",
+    count: 10,
   },
   post: {
     sort: "relevance",
-    time: "hour",
-    count: 2,
+    time: "week",
+    count: 100,
   },
   comment: {
     sort: "relevance",
-    time: "hour",
-    count: 2
+    time: "week",
+    count: 100
   },
 };
 

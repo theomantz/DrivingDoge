@@ -209,7 +209,7 @@ function processRedditPosts(postObject) {
         postObject.save().then(() => {
           return postObject
         })
-        
+
       } catch (e) {
         console.log(e)
       }
