@@ -18,7 +18,7 @@ mongoose
 const generateQuery = require('./queryUtilByJson')
 
 const defaultSearch = {
-  queryString: "BTC",
+  queryString: "DOGE",
   sort: "relevance",
   time: "hour",
   subreddit: {

@@ -1,5 +1,4 @@
 const validText = require('./valid-text');
-
 const assets = require('../config/assets')
 
 // Validator will validate and normalize query
@@ -21,7 +20,7 @@ function validateQuery(query) {
 
   query = validText(query) ? query : '';
 
-  if(!query.length) {
+  if(!query.length) { 
 
     errors.query = 'Please enter a valid ticker'
     

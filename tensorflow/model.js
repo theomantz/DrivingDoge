@@ -185,29 +185,34 @@ function processRedditPosts(postObject) {
         negative: 0,
       };
       
-      let id = commentArray.pop().postId
-      let postObject = await Post.findById(id)
-      
-      const averageScore = parseFloat((commentScoreSum / comments.length).toFixed(10))
+      try {
 
-      postObject.averageScore = averageScore || 0
-
-      let sentimentScore
-
-      if (averageScore > SentimentBounds.positive) {
-        sentimentScore = "positive";
-      } else if (averageScore > SentimentBounds.neutral) {
-        sentimentScore = "neutral";
-      } else {
-        sentimentScore = "negative";
+        let id = commentArray.pop().postId
+        let postObject = await Post.findById(id)
+        
+        const averageScore = parseFloat((commentScoreSum / comments.length).toFixed(10))
+        
+        postObject.averageScore = averageScore || 0
+        
+        let sentimentScore
+        
+        if (averageScore > SentimentBounds.positive) {
+          sentimentScore = "positive";
+        } else if (averageScore > SentimentBounds.neutral) {
+          sentimentScore = "neutral";
+        } else {
+          sentimentScore = "negative";
+        }
+        
+        postObject.sentimentScore = sentimentScore
+        
+        postObject.save().then(() => {
+          return postObject
+        })
+        
+      } catch (e) {
+        console.log(e)
       }
-
-      postObject.sentimentScore = sentimentScore
-      
-      postObject.save().then(() => {
-
-        return postObject
-      })
     })
   })
 

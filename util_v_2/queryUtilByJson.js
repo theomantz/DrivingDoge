@@ -5,6 +5,7 @@ const Post = require('../models/Post')
 const Comment = require('../models/Comment')
 const processRedditPosts = require('../tensorflow/model')
 const validateQueryInput = require('../validation/query')
+const constructQueryForResponse = require('../util/queryUtil')
 const Subreddit = require('../models/Subreddit')
 const { DateTime } = require('luxon')
 
@@ -92,9 +93,19 @@ async function generateQuery(queryRequestObject) {
    
   }
   
-  return await constructSubreddits(queryDocument, searchHTML)
+  let query = await constructSubreddits(queryDocument, searchHTML)
 
-  
+  return await constructQueryForResponse(query)
+
+}
+
+async function fetch(url, req = 0) {
+  if(req === 5) return new Error({msg: 'Too many 503s'})
+  const res = await axios.get(url)
+  if (res.status !== 200) {
+    let numReq = req + 1
+    setTimeout(fetch(url, numReq), (numReq * (60 * 1000)))
+  } else if (res.status === 200) return res
 }
 
 async function constructSubreddits(queryDocument, searchHTML) {
@@ -110,7 +121,7 @@ async function constructSubreddits(queryDocument, searchHTML) {
   const $ = cheerio.load(searchHTML.data)
 
   const subredditDivs = $('div.search-result-subreddit')
-  
+  let queryDoc
   for(let i = 0 ; i < count && i < subredditDivs.length ; i++ ) {
 
     const el = subredditDivs[i]
@@ -142,13 +153,14 @@ async function constructSubreddits(queryDocument, searchHTML) {
     let subReddit = await subredditDocument.save()
 
     queryDocument.subreddits.push(subReddit.id)
-    let queryDoc = await queryDocument.save()
+    queryDoc = await queryDocument.save()
 
     
 
     await constructPosts(subReddit, queryDoc)
-    
   }
+
+  return queryDoc
   
 }
 
@@ -164,12 +176,18 @@ async function constructPosts(subReddit, queryDocument) {
         }
       }
   } = queryDocument
+  let postIds = []
   
   let URL = `${subReddit.longLink}search/?q=${query}&restrict_sr=on&sort=${sort}&t=${time}`
-  let subRedditHTML = await axios.get(URL)
 
+  let subRedditHTML = await fetch(URL)
+
+  if(typeof subRedditHTML === Error) return subRedditHTML
+    
   const $ = cheerio.load(subRedditHTML.data)
   const postResults = $('.contents .search-result')
+  if(!postResults.length) return null
+  
 
   for(let i = 0; i < count && i < postResults.length ; i++ ) {
 
@@ -190,19 +208,24 @@ async function constructPosts(subReddit, queryDocument) {
       })
     }
 
-    let postURL = `${$('.search-title.may-blank', el).attr('href')}.json`
-    let postJSON = await axios.get(postURL)
-
-    post.JSONpost = postJSON
-    post.upvotes = postJSON.data[0].data.children[0].data.ups;
-    post.commentCount = postJSON.data[0].data.children[0].data.num_comments;
-
     try {
+
+      let postURL = `${$('.search-title.may-blank', el).attr('href')}.json`
+      let postJSON = await fetch(postURL)
+
+      if(typeof postJSON === Error) return postJSON
+      
+      post.JSONpost = postJSON
+      post.upvotes = postJSON.data[0].data.children[0].data.ups;
+      post.commentCount = postJSON.data[0].data.children[0].data.num_comments;
+
 
       if( post.commentCount ) {
         let savedPost = await post.save()
-        await subreddit.posts.push(savedPost.id)
-        await constructTopLevelComments(postJSON[1], savedPost)
+        subReddit.posts.push(savedPost.id)
+        postIds.push(savedPost.id)
+        await subReddit.save()
+        await constructTopLevelComments(postJSON.data[1].data, savedPost)
       }
 
     } catch (e) {
@@ -211,13 +234,18 @@ async function constructPosts(subReddit, queryDocument) {
 
     await processRedditPosts(post)
     
+    
   }
+
+  queryDocument.posts.concat(postIds)
+  return await queryDocument.save()
 }
 
 async function constructTopLevelComments(data, post) {
+
   let topLevelComments = data.children
-  topLevelComments.forEach(comment => {
-    let c = comment.data
+  for(let i = 0; i < topLevelComments.length ; i++ ) {
+    let c = topLevelComments[i].data
     try {
 
       let saved = await Comment.findOneAndUpdate({
@@ -225,7 +253,8 @@ async function constructTopLevelComments(data, post) {
       }, {
         author: c.author, authorId: c.author_fullname,
         commentId: c.id, upvotes: c.ups, downvotes: c.downs,
-        timestamp: c.created_utc, text: c.body, JSONComment: c
+        timestamp: c.created_utc, text: c.body, JSONComment: c,
+        postId: post.id
       }, {
         upsert: true,
         new: true
@@ -236,12 +265,12 @@ async function constructTopLevelComments(data, post) {
     } catch (e) {
       console.log(e)
     }
-    if(typeof c.replies === Object) {
-      constructTopLevelComments(c.replies.data)
+    if(typeof c.replies === 'object') {
+      constructTopLevelComments(c.replies.data, post)
     } else {
       return null
     }
-  })
+  }
 }
 
 
