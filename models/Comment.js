@@ -27,10 +27,6 @@ const CommentSchema = new Schema(
       type: Number,
       required: true
     },
-    unvoted: {
-      type: Number,
-      required: true
-    },
     timestamp: {
       type: String,
       required: false
@@ -50,6 +46,10 @@ const CommentSchema = new Schema(
     queryParams: {
       type: [String],
       required: true
+    },
+    JSONComment: {
+      type: Object,
+      required: false
     }
   },
   {

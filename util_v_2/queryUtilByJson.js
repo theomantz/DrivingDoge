@@ -3,10 +3,10 @@ const cheerio = require('cheerio')
 const Query = require('../models/Query')
 const Post = require('../models/Post')
 const Comment = require('../models/Comment')
-// const processRedditPosts = require('../tensorflow/model')
+const processRedditPosts = require('../tensorflow/model')
 const validateQueryInput = require('../validation/query')
 const Subreddit = require('../models/Subreddit')
-const constructPostsBySubreddit = require('../util/postUtil')
+const { DateTime } = require('luxon')
 
 /* 
   queryRequestObject = {
@@ -43,10 +43,11 @@ async function generateQuery(queryRequestObject) {
  }
 
  const {
-   params: {
-     sort,
-     time
-   }
+  sort,
+  time,
+  subreddit,
+  post,
+  comment
  } = queryRequestObject
 
  const options = {
@@ -61,54 +62,50 @@ async function generateQuery(queryRequestObject) {
     options
  );
 
- let cutoffDate
- let searchParams
- if(time === 'hour') {
-   cutoffDate = new Date(Date.now() - 1000 * 3600);
- } else if (time === 'day') {
-   cutoffDate = Date.now() - 1000 * 3600 * 24;
- } else if (time === 'week') {
-   cutoffDate = Date.now() - 1000 * 3600 * 24 * 7;
- } else if (time === 'month') {
-   cutoffDate = Date.now() - 1000 * 3600 * 24 * 28;
- }
+ let today = new DateTime(Date.now())
+ let cutoffDate = today.minus({ [time]: 1 })
 
  let queryDocument = await Query.findOne({
    query: asset, 
-   createdAt: { $gte: cutoffDate.toISOString() }, 
-   params: { 
-     params: { 
-      time: time,
-      sort: sort
-    }}
-  })
+   createdAt: { 
+     $gte: cutoffDate.toISO(),
+     $lt: today.toISO()
+    }, 
+    'params.time': time,
+    'params.sort': sort,
+    'params.subreddit.count': subreddit.count,
+    'params.post.count': post.count,
+    'params.comment.count': comment.count,
+  }).exec()
 
- if(!queryDocument) {
-
-   queryDocument = new Query({
-     query: asset,
+  console.log(queryDocument)
+  
+  if(!queryDocument) {
+    
+    queryDocument = new Query({
+      query: asset,
      params: queryRequestObject,
    })
 
    queryDocument = await queryDocument.save()
    
- }
- 
+   
+  }
+  
+  return await constructSubreddits(queryDocument, searchHTML)
 
-
- await constructSubreddits(queryDocument, searchHTML)
   
 }
 
 async function constructSubreddits(queryDocument, searchHTML) {
 
-  const { params: {
+  const { 
     params: { 
       subreddit: {
         count
       }
-     }
-  } } = queryDocument
+    } 
+  } = queryDocument
 
   const $ = cheerio.load(searchHTML.data)
 
@@ -158,25 +155,20 @@ async function constructSubreddits(queryDocument, searchHTML) {
 async function constructPosts(subReddit, queryDocument) {
 
   const {
-    queryString,
-    params: {
+    query,
       params: {
         post: {
           sort,
           time,
           count
         }
-      },
-    }
+      }
   } = queryDocument
   
-  let URL = `${subReddit.longLink}search/?q=${queryString}&restrict_sr=on&sort=${sort}&t=${time}`
-
-  
+  let URL = `${subReddit.longLink}search/?q=${query}&restrict_sr=on&sort=${sort}&t=${time}`
   let subRedditHTML = await axios.get(URL)
 
   const $ = cheerio.load(subRedditHTML.data)
-
   const postResults = $('.contents .search-result')
 
   for(let i = 0; i < count && i < postResults.length ; i++ ) {
@@ -187,9 +179,7 @@ async function constructPosts(subReddit, queryDocument) {
 
     let post = await Post.findOne({ title: title }).exec()
 
-    let url
     if(!post) {
-      url = 
       post = new Post({
         title: title,
         subredditRef: subReddit.id,
@@ -200,22 +190,60 @@ async function constructPosts(subReddit, queryDocument) {
       })
     }
 
-    let postURL = `${$('.search-title.may-blank').attr('href')}.json`
-
+    let postURL = `${$('.search-title.may-blank', el).attr('href')}.json`
     let postJSON = await axios.get(postURL)
-    post.JSONpost = postJson
-    post.save()
-    
-    const postTitleJSON = postJSON[0].data
 
+    post.JSONpost = postJSON
+    post.upvotes = postJSON.data[0].data.children[0].data.ups;
+    post.commentCount = postJSON.data[0].data.children[0].data.num_comments;
 
+    try {
+
+      if( post.commentCount ) {
+        let savedPost = await post.save()
+        await subreddit.posts.push(savedPost.id)
+        await constructTopLevelComments(postJSON[1], savedPost)
+      }
+
+    } catch (e) {
+      console.log(e)
+    }
+
+    await processRedditPosts(post)
     
   }
-
-
-
-  
 }
+
+async function constructTopLevelComments(data, post) {
+  let topLevelComments = data.children
+  topLevelComments.forEach(comment => {
+    let c = comment.data
+    try {
+
+      let saved = await Comment.findOneAndUpdate({
+        commentId: c.id
+      }, {
+        author: c.author, authorId: c.author_fullname,
+        commentId: c.id, upvotes: c.ups, downvotes: c.downs,
+        timestamp: c.created_utc, text: c.body, JSONComment: c
+      }, {
+        upsert: true,
+        new: true
+      }).exec()
+
+      post.comments.push(saved.id)
+
+    } catch (e) {
+      console.log(e)
+    }
+    if(typeof c.replies === Object) {
+      constructTopLevelComments(c.replies.data)
+    } else {
+      return null
+    }
+  })
+}
+
 
 
 

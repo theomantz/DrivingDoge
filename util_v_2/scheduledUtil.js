@@ -12,31 +12,29 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false
   })
-  .then(() => console.log('Connected to MongoDB Successfully'))
+  .then(() => console.log('Connected to MongoDB Successfully through Scheduled'))
   .catch(err => console.log(err))
 
 const generateQuery = require('./queryUtilByJson')
 
 const defaultSearch = {
   queryString: "BTC",
-  params: {
+  sort: "relevance",
+  time: "hour",
+  subreddit: {
     sort: "relevance",
     time: "hour",
-    subreddit: {
-      sort: "relevance",
-      time: "hour",
-      count: 2,
-    },
-    post: {
-      sort: "relevance",
-      time: "hour",
-      count: 2,
-    },
-    comment: {
-      sort: "relevance",
-      time: "hour",
-      count: 2
-    },
+    count: 2,
+  },
+  post: {
+    sort: "relevance",
+    time: "hour",
+    count: 2,
+  },
+  comment: {
+    sort: "relevance",
+    time: "hour",
+    count: 2
   },
 };
 

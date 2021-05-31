@@ -60,7 +60,8 @@ const PostSchema = new Schema(
       ref: "Query"
     }],
     JSONPost: {
-      type: Object
+      type: Object,
+      required: false
     }
   },
   {
