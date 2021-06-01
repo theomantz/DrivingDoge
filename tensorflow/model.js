@@ -187,6 +187,10 @@ function processRedditPosts(postObject) {
       
       try {
 
+        if(!commentArray.length) {
+          console.log(commentArray)
+        }
+        
         let id = commentArray.pop().postId
         let postObject = await Post.findById(id)
         

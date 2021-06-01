@@ -61,7 +61,8 @@ async function generateQuery(queryRequestObject) {
  let searchHTML = await axios.get(
    `https://old.reddit.com/search/?q=${asset}&t=${time}&sort=${sort}&type=sr`,
     options
- );
+ )
+ .catch(e => console.log(e))
 
  let today = new DateTime(Date.now())
  let cutoffDate = today.minus({ [time]: 1 })
@@ -90,20 +91,23 @@ async function generateQuery(queryRequestObject) {
    
    
   }
-  
-  let query = await constructSubreddits(queryDocument, searchHTML)
+  if(searchHTML.status === 200) {
+    let query = await constructSubreddits(queryDocument, searchHTML)
+    return await constructQueryForResponse(query)
+  } else {
+    return null
+  }
 
-  return await constructQueryForResponse(query)
 
 }
 
-async function fetch(url, req = 0) {
-  if(req === 5) return new Error({msg: 'Too many 503s'})
-  const res = await axios.get(url)
-  if (res.status !== 200) {
-    let numReq = req + 1
-    setTimeout(fetch(url, numReq), (numReq * (60 * 1000)))
-  } else if (res.status === 200) return res
+async function fetch(url) {
+  return await axios.get(url)
+    .then(res => res)
+    .catch( e => {
+      console.log(e)
+      return e
+    })
 }
 
 async function constructSubreddits(queryDocument, searchHTML) {
@@ -150,7 +154,7 @@ async function constructSubreddits(queryDocument, searchHTML) {
     
     let subReddit = await subredditDocument.save()
 
-    queryDocument.subreddits.push(subReddit.id)
+    queryDocument. subreddits.push(subReddit.id)
     queryDoc = await queryDocument.save()
 
     
@@ -180,7 +184,7 @@ async function constructPosts(subReddit, queryDocument) {
 
   let subRedditHTML = await fetch(URL)
 
-  if(typeof subRedditHTML === Error) return subRedditHTML
+  if(subRedditHTML.status !== 200) return subRedditHTML
     
   const $ = cheerio.load(subRedditHTML.data)
   const postResults = $('.contents .search-result')
@@ -212,7 +216,7 @@ async function constructPosts(subReddit, queryDocument) {
       let postURL = `${$('.search-title.may-blank', el).attr('href')}.json`
       let postJSON = await fetch(postURL)
 
-      if(typeof postJSON === Error) return postJSON
+      if(postJSON.status !== 200) return postJSON
       
       post.JSONpost = postJSON
       post.upvotes = postJSON.data[0].data.children[0].data.ups;
@@ -225,7 +229,9 @@ async function constructPosts(subReddit, queryDocument) {
         postIds.push(savedPost.id)
         await subReddit.save()
         post = await constructTopLevelComments(postJSON.data[1].data, savedPost)
-        await processRedditPosts(post)
+        if(post.comments.length) {
+          await processRedditPosts(post)
+        }
       }
 
     } catch (e) {
@@ -241,7 +247,6 @@ async function constructPosts(subReddit, queryDocument) {
 async function constructTopLevelComments(data, post) {
 
   let topLevelComments = data.children
-  let returnPost
   const commentIds = []
   for(let i = 0; i < topLevelComments.length ; i++ ) {
     let c = topLevelComments[i].data
@@ -270,7 +275,9 @@ async function constructTopLevelComments(data, post) {
       await constructTopLevelComments(c.replies.data, post)
     }
   }
-  post.comments.addToSet(...commentIds)
+  if(commentIds.length) {
+    post.comments.addToSet(...commentIds)
+  }
   return await post.save()
 }
 

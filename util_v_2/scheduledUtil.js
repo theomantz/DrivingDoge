@@ -18,7 +18,7 @@ mongoose
 const generateQuery = require('./queryUtilByJson')
 
 const defaultSearch = {
-  queryString: "BTC",
+  queryString: "DOGE",
   sort: "relevance",
   time: "week",
   subreddit: {
@@ -42,6 +42,7 @@ const result = async () => {
   let query = await generateQuery(defaultSearch)
   console.log('done')
   console.log(query)
+  process.exit()
 }
 
 result()
