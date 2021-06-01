@@ -78,8 +78,6 @@ async function generateQuery(queryRequestObject) {
     'params.post.count': post.count,
     'params.comment.count': comment.count,
   }).exec()
-
-  console.log(queryDocument)
   
   if(!queryDocument) {
     
@@ -226,18 +224,13 @@ async function constructPosts(subReddit, queryDocument) {
         subReddit.posts.push(savedPost.id)
         postIds.push(savedPost.id)
         await subReddit.save()
-        promises.push(constructTopLevelComments(postJSON.data[1].data, savedPost))
+        post = await constructTopLevelComments(postJSON.data[1].data, savedPost)
+        await processRedditPosts(post)
       }
 
     } catch (e) {
       console.log(e)
     }
-
-    Promise.allSettled(promises).then(async () => {
-      if (post.commentCount) {
-        await processRedditPosts(post);
-      }
-    });
     
   }
 
@@ -248,9 +241,11 @@ async function constructPosts(subReddit, queryDocument) {
 async function constructTopLevelComments(data, post) {
 
   let topLevelComments = data.children
+  let returnPost
+  const commentIds = []
   for(let i = 0; i < topLevelComments.length ; i++ ) {
     let c = topLevelComments[i].data
-    if(c.text) {
+    if(c.body) {
       try {
         
         let saved = await Comment.findOneAndUpdate({
@@ -265,18 +260,18 @@ async function constructTopLevelComments(data, post) {
           new: true
         }).exec()
         
-        post.comments.push(saved.id)
-        
+        commentIds.push(saved.id)
+
       } catch (e) {
         console.log(e)
       }
     }
     if(typeof c.replies === 'object') {
-      constructTopLevelComments(c.replies.data, post)
-    } else {
-      return null
+      await constructTopLevelComments(c.replies.data, post)
     }
   }
+  post.comments.addToSet(...commentIds)
+  return await post.save()
 }
 
 
