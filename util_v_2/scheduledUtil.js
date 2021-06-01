@@ -38,4 +38,10 @@ const defaultSearch = {
   },
 };
 
-generateQuery(defaultSearch)
+const result = async () => {
+  let query = await generateQuery(defaultSearch)
+  console.log('done')
+  console.log(query)
+}
+
+result()
