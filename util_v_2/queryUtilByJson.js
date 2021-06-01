@@ -187,6 +187,7 @@ async function constructPosts(subReddit, queryDocument) {
   const $ = cheerio.load(subRedditHTML.data)
   const postResults = $('.contents .search-result')
   if(!postResults.length) return null
+  let promises = []
   
 
   for(let i = 0; i < count && i < postResults.length ; i++ ) {
@@ -225,17 +226,18 @@ async function constructPosts(subReddit, queryDocument) {
         subReddit.posts.push(savedPost.id)
         postIds.push(savedPost.id)
         await subReddit.save()
-        await constructTopLevelComments(postJSON.data[1].data, savedPost)
+        promises.push(constructTopLevelComments(postJSON.data[1].data, savedPost))
       }
 
     } catch (e) {
       console.log(e)
     }
 
-    if(post.commentCount) { 
-      await processRedditPosts(post)
-    }
-    
+    Promise.allSettled(promises).then(async () => {
+      if (post.commentCount) {
+        await processRedditPosts(post);
+      }
+    });
     
   }
 
