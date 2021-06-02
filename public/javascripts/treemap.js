@@ -36,6 +36,7 @@ class Treemap {
     d3.select("#detailed-metrics")
       .append('table')
       .attr('class', 'detailed-metrics-table')
+      .style('font-size', 0)
       .append('tbody')
       .selectAll('detailedMetrics')
       .data(attr)
@@ -94,7 +95,7 @@ class Treemap {
       .text(
         `The chart shown ${chartDirectionText} is a treemap representation of Reddit engagement and sentiment surrounding ${title}.`
       )
-      .attr('class', 'chart');
+      .attr('class', 'chart-static');
 
 
     d3.select('#about-chart')
@@ -103,7 +104,7 @@ class Treemap {
         .data(bullets)
         .enter()
         .append('li')
-        .attr('class', 'chart chart-bullet')
+        .attr('class', 'chart-static chart-bullet')
         .text((d) => {
           return d
         })
