@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let windowWidth = window.innerWidth;
   let windowHeight = window.innerHeight * 0.75;
 
-  console.log(windowHeight)
-
   init((windowWidth), (windowHeight))
 
 
@@ -31,25 +29,63 @@ async function newTree(value, width, height) {
 
   const newData = await fetchData(value)
 
-  console.log(height)
+  setTimeout(draw, 800)
 
-  drawTreemaps(newData, width, height)
+  function draw() {
+    drawTreemaps(newData, width, height)
+  }
 
 }
 
 function clearData() {
 
-  d3.selectAll('#svg-title .title').remove();
+  d3.select('#svg-title')
+    .transition()
+      .duration(750)
+      .style('font-size', '0px')
+      .remove();
+
   d3.selectAll('.assetOption').remove();
-  d3.selectAll('.chart').remove();
-  d3.select('svg').remove();
+  d3.selectAll('.chart-metrics-table, .default-metrics, .chart')
+    .transition()
+      .duration(750)
+      .style('font-size', '0px')
+      .remove();
+  d3.select('svg')
+    .transition()
+      .duration(750)
+      .style('opacity', 0)
+      .remove();
   
 }
 
 
 async function init(width, height) {
 
-  
+    const margins = {
+      top: 10,
+      right: 10,
+      bottom: 10,
+      left: 10,
+    };
+
+  let rems
+  if(height > 900) {
+    rems = 16
+  } else if (height > 400) {
+    rems = 14
+  } else {
+    rems = 12
+  }
+    
+  d3.select("#svg-container")
+    .attr('style', `min-width:${width * 0.6}px;min-height:${height + 200}px`)
+
+  d3.select("#chart-metrics")
+    .style("min-height", `${13 * rems}px`)
+
+  d3.select('#right-sidenav')
+    .style('min-width', `${width * 0.2}px`)
 
   const starterData = await fetchData('doge')
 
@@ -72,37 +108,39 @@ function drawTreemaps(dataSet, chartAreaWidth, chartAreaHeight) {
   d3.selectAll('#svg-title').remove()
   d3.selectAll('#svg-subtitle').remove()
 
-  const title = d3.select('#svg-container')
-    .append('h1')
-    .attr('id', 'svg-title')
-    .text(`$${titleText.toUpperCase()}`)
-  
-  const subTitle = d3.select('#svg-title')
-    .append('h3')
-    .attr('id', 'svg-subtitle')
-    .text(`${titleSubtext}`)
-
   const svg = d3.select('#svg-container')
     .append('svg')
     .attr('width', (chartAreaWidth * 0.55) + margins.left + margins.right)
     .attr('height', chartAreaHeight + margins.top + margins.bottom)
     .attr('class', 'svg')
     .append('g')
+    .style('opacity', 0)
     .attr('transform',
-    "translate(" + (margins.left - margins.right) + "," + ( margins.top - margins.bottom) + ")");
+    "translate(" + (margins.left - margins.right) + "," + ( margins.top - margins.bottom) + ")")
+
 
 
   const treemap = new Treemap(dataSet, (chartAreaWidth * 0.55), chartAreaHeight, svg)
 
   treemap.render()
 
-  const leftSideNav = d3.select('#left-sidenav')
+    d3.select("#svg-container")
+      .insert("h1", '.svg')
+      .attr("id", "svg-title")
+      .style('opacity', 1)
+      .text(`$${titleText.toUpperCase()}`);
+
+    d3.select("#svg-title")
+      .append("h3")
+      .attr("id", "svg-subtitle")
+      .style("opacity", 1)
+      .text(`${titleSubtext}`);
     
 
   let assetOptions = dataSet.available
 
 
-  const leftSelectInput = d3.select('#asset-input')
+  d3.select('#asset-input')
     .selectAll('assetOptions')
     .data(assetOptions)
     .enter()
@@ -116,6 +154,8 @@ function drawTreemaps(dataSet, chartAreaWidth, chartAreaHeight) {
     })
     .property('selected', (d) => {
       return d === dataSet.name
-    })
+    });
+
   
+  d3.select("g").transition().duration(750).style("opacity", 1);
 }

@@ -204,7 +204,6 @@ body {
 
 
 #right-sidenav {
-  min-width: 40%;
   display: flex;
   flex-direction: column;
   margin: 50px auto;

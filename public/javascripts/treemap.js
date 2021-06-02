@@ -87,7 +87,9 @@ class Treemap {
 
     let chartDirectionText = window.innerWidth < 1300 ? 'below' : 'to the right'
 
+    
     d3.select("#about-chart")
+      .style('min-height', `${this.height * 0.4}px`)
       .append("p")
       .text(
         `The chart shown ${chartDirectionText} is a treemap representation of Reddit engagement and sentiment surrounding ${title}.`
@@ -170,7 +172,9 @@ class Treemap {
       .paddingTop(30)
       .paddingRight(7)
       .paddingInner(3)
+      .round(true)
       (root)
+      .sort((a, b) => b.value - a.value)
 
 
     this.svg
@@ -223,7 +227,6 @@ class Treemap {
       .text((d) => d.data.name)
       .attr('class', d => `subreddit-text`)
       .attr("id", d => `${d.data.name}`)
-
 
   }
 

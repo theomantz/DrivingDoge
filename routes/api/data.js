@@ -101,7 +101,7 @@ function constructResponse(resData) {
             upvotes: post.upvotes,
             commentCount: post.commentCount,
             averageScore: post.averageScore,
-            sentimentScore: post.sentimentScore,
+            sentimentScore: post.sentimentScore || 0,
             value: (post.commentCount + post.upvotes)
           })
           
