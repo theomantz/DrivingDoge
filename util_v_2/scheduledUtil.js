@@ -16,9 +16,10 @@ mongoose
   .catch(err => console.log(err))
 
 const generateQuery = require('./queryUtilByJson')
+const { stockTickers, assetClasses } = require('../config/assets')
 
 const defaultSearch = {
-  queryString: "DOGE",
+  queryString: "BTC",
   sort: "relevance",
   time: "week",
   subreddit: {
@@ -38,11 +39,32 @@ const defaultSearch = {
   },
 };
 
-const result = async () => {
-  let query = await generateQuery(defaultSearch)
-  console.log('done')
-  console.log(query)
-  process.exit()
-}
+const cryptos = {
+  ADA: "CARDANO",
+  ALGO: "ALGORAND",
+  BTC: "BITCOIN",
+  BUSD: "BINANCE USD",
+  DOGE: "DOGECOIN",
+  DOT: "POLKADOT",
+  ETH: "ETHEREUM",
+  LTC: "LITECOIN",
+  SOL: "SOLANA",
+  XLM: "STELLAR",
+  XMR: "MONERO",
+  XRP: "XRP",
+  XTZ: "TEZOS",
+};
+  // const result = async () => {
+  //   let query = await generateQuery(defaultSearch)
+  //   console.log('done')
+  //   console.log(query)
+  //   process.exit()
+  // }
 
-result()
+[assetClasses].forEach((assetObject) => {
+  Object.values(assetObject).forEach(async (a) => {
+    search = defaultSearch;
+    search.queryString = a;
+    await generateQuery(search);
+  })
+});

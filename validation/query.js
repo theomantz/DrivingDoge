@@ -18,6 +18,7 @@ function validateQuery(query) {
     .trim()
     .toUpperCase()
 
+    console.log(query)
   query = validText(query) ? query : '';
 
   if(!query.length) { 
@@ -38,6 +39,10 @@ function validateQuery(query) {
   const shortStock = Object.keys(stockTickers)
   const longStock = Object.values(stockTickers)
 
+  // Assets
+  const shortAssetClass = Object.keys(assetClasses)
+  const longAssetClass = Object.values(assetClasses)
+
   // Check tickers
   if(cryptoTickers[query] || stockTickers[query]) {
 
@@ -50,8 +55,10 @@ function validateQuery(query) {
 
     asset = `${query}+OR+${longAsset}`
 
-  } else if ( assetClasses.includes(query) ) {
-    asset = query
+  } else if ( assetClasses[query] || longAssetClass.includes(query) ) {
+    let first = assetClasses[query] ? query : shortAssetClass.find(s => assetClasses[s] === query)
+    let second = assetClasses[query] ? shortAssetClass.find(s => assetClasses[s] === query) : query
+    asset = `${first}+OR+${second}`
   } else {
     errors.asset = 'Unrecognized asset ticker or class, please choose a ticker from the list'
   }

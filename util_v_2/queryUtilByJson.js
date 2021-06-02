@@ -218,7 +218,6 @@ async function constructPosts(subReddit, queryDocument) {
 
       if(postJSON.status !== 200) return postJSON
       
-      post.JSONpost = postJSON
       post.upvotes = postJSON.data[0].data.children[0].data.ups;
       post.commentCount = postJSON.data[0].data.children[0].data.num_comments;
 
@@ -258,8 +257,7 @@ async function constructTopLevelComments(data, post) {
         }, {
           author: c.author, authorId: c.author_fullname,
           commentId: c.id, upvotes: c.ups, downvotes: c.downs,
-          timestamp: c.created_utc, text: c.body, JSONComment: c,
-          postId: post.id
+          timestamp: c.created_utc, text: c.body, postId: post.id
         }, {
           upsert: true,
           new: true

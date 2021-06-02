@@ -51,7 +51,7 @@ async function init(width, height) {
 
   
 
-  const starterData = await fetchData('btc')
+  const starterData = await fetchData('doge')
 
 
   drawTreemaps(starterData, width, height)
