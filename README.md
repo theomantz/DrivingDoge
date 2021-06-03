@@ -1,15 +1,76 @@
-# DrivingDoge
+<!-- Project sheilds -->
 
-[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/approved-by-george-costanza.svg)](https://forthebadge.com)
 
-DrivingDoge (dd) is a sentiment analysis app which scrapes weekly Reddit threads relevant to a predetermined list of assets. It then parses the text from each post, and assigns a sentiment score.
+[![JavaScript](https://img.shields.io/badge/Built%20With-JavaScript-blue?style=for-the-badge)](https://shields.io/)
+[![TensorFlow](https://img.shields.io/badge/Built%20With-TensorFlow-red?style=for-the-badge)](https://shields.io/)
+[![Node](https://img.shields.io/badge/Built%20with-node%20JS-green?style=for-the-badge)](https://shields.io/)
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-DrivingDoge is written in JavaScript it uses a Node JJ/Express JS backend with a TensorFlow JS model to assign sentiment scores and Vanilla JS and D3 JS to visualize the data on the frontend.
+<!-- Project Logo and Header Content -->
+<br />
+<div align='center' >
+  <img src='./public/assets/drivingDogeRect.png' style='border-radius:5px; margin-bottom:20px'>
+  <h1 align='center' style='border:none'>DrivingDoge</h3>
+  <p align='center' 
+    style='display:flex; flex-direction:row; justify-content:center; align-items:center; font-weight:700'
+  >
+    <a href='http://drivingdoge.herokuapp.com/' style='margin:5px'>Live Site</a>
+    ·
+    <a href='https://github.com/theomantz/DrivingDoge/issues'style='margin:5px'>Report A Bug</a>
+    ·
+    <a href='https://github.com/theomantz/DrivingDoge/issues'style='margin:5px'>Request Feature</a>
+  </p>
+</div>
+
+<details open='open'> 
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#the-process">The Process</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
+
+## About The Project
+
+<div align='center'> 
+  <img src='./public/assets/drivingDoge.png' style='border-radius:5px; margin-top:10px;margin-bottom:10px'>
+</div>
+
+<b>DrivingDoge [dd]</b> is a sentiment analysis app which scrapes weekly Reddit threads relevant to a predetermined list of assets. The inspiration for DrivingDoge came about during the crypto market bull run that occured from mid 2020 through mid 2021. DogeCoin, a seemingly worthless asset, had skyrocketed in price over this time span. This project seeks to determine two things:
+
+* Who is driving the conversation around certain assets?
+* What is the nature of that conversation?
+
+### Built With
+
+DrivingDoge uses the following modules and frameworks:
+
+* [Node JS](https://nodejs.org/en/about/)
+* [Express JS](https://expressjs.com/)
+* [D3 JS](https://d3js.org/)
+
+
+### The Process
 
 The first notable feature of DrivingDoge is the web scraping mechanism. Utilizing Axios to perform HTTP requests, and Cheerio JS to parse the HTML, DrivingDoge searches reddit using a set of parameters and a query string.
 
 An example set of search parameters with a query string is shown below:
+
 ```js
 const defaultSearch = {
   queryString: "BTC",
@@ -304,3 +365,54 @@ Lastly, it renders a treemap visualization of the sentiment data:
 
 }
 ```
+<!-- Getting Started -->
+## Getting Started
+
+Getting DrivingDoge up and running is easy!
+
+### Prerequisites
+
+* npm
+  ```sh
+    npm install npm@latest -g
+  ```
+
+### Installation
+
+1. Clone the repo: 
+   ```sh
+    git clone https://github.com/theomantz/DrivingDoge.git
+   ```
+2. Install NPM packages:
+    ```sh
+      npm install
+    ```
+3. Start the Node server:
+    ```sh
+      npm run start
+    ```
+4. Run webpack:
+    ```sh
+      npm run webpack
+    ```
+<!-- Roadmap -->
+## Roadmap
+See the [open issues](https://github.com/theomantz/DrivingDoge/issues) for proposed features and issues
+
+<!-- Contact -->
+## Contact
+
+Theo Mantz - theo@mantz.io
+
+DrivingDoge - [https://github.com/theomantz/DrivingDoge](https://github.com/theomantz/DrivingDoge)
+
+<!-- Acknowledgements -->
+## Acknowledgements
+
+* [Reddit](https://github.com/theomantz/DrivingDoge)
+* [TensorFlow JS](https://www.tensorflow.org/js)
+* [Benson Ruan - Twitter Sentiment Analysis Bot](https://www.tensorflow.org/js)
+
+<!-- Shields -->
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/theo-mantz
