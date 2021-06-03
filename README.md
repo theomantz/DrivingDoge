@@ -1,6 +1,7 @@
 # DrivingDoge
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/approved-by-veridian-dynamics.svg)](https://forthebadge.com)
 
 DrivingDoge (dd) is a sentiment analysis app which scrapes weekly Reddit threads relevant to a predetermined list of assets. It then parses the text from each post, and assigns a sentiment score.
 
