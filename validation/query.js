@@ -1,6 +1,5 @@
 const validText = require('./valid-text');
 const assets = require('../config/assets')
-const validText = require('./valid-text')
 const Filter = require('bad-words')
 // Validator will validate and normalize query
 
