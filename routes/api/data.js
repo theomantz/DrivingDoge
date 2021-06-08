@@ -14,7 +14,6 @@ router.get("/:query", async (req, res) => {
       return res.status(400).json(errors);
     }
 
-    console.log(asset)
     let resData = await Query.findOne({ query: asset })
       .populate({
         path: "subreddits",

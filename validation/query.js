@@ -1,6 +1,7 @@
 const validText = require('./valid-text');
 const assets = require('../config/assets')
-
+const validText = require('./valid-text')
+const Filter = require('bad-words')
 // Validator will validate and normalize query
 
 function validateQuery(query) {
@@ -60,7 +61,12 @@ function validateQuery(query) {
     let second = assetClasses[query] ? shortAssetClass.find(s => assetClasses[s] === query) : query
     asset = `${first}+OR+${second}`
   } else {
-    errors.asset = 'Unrecognized asset ticker or class, please choose a ticker from the list'
+    let filter = new Filter()
+    if( filter.isProfane(query) ) {
+      errors.asset = 'Please be nice'
+    } else {
+      asset = query
+    }
   }
   
   return {
