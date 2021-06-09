@@ -11,4 +11,4 @@ config/urls.js
 
 tensorflow/resources/
 
-newrelic_agent.log
+./newrelic_agent.log
