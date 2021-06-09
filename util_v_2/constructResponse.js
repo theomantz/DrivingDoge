@@ -1,3 +1,7 @@
+/* 
+Response is structured in heirarchical format for D3 JS on the frontend.
+ */
+
 function constructResponse(resData) {
   let totalSubs = 0;
   let value = 0;
@@ -61,3 +65,5 @@ function constructResponse(resData) {
 
   return response;
 }
+
+module.exports = constructResponse;

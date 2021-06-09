@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
   {
@@ -13,7 +13,7 @@ const PostSchema = new Schema(
     },
     subredditName: {
       type: String,
-      required: false
+      required: false,
     },
     localId: {
       type: String,
@@ -21,7 +21,7 @@ const PostSchema = new Schema(
     },
     url: {
       type: String,
-      required: true
+      required: true,
     },
     author: {
       type: String,
@@ -29,7 +29,7 @@ const PostSchema = new Schema(
     },
     promoted: {
       type: Boolean,
-      required: false
+      required: false,
     },
     upvotes: {
       type: Number,
@@ -41,32 +41,36 @@ const PostSchema = new Schema(
     },
     commentCount: {
       type: Number,
-      required: true
+      required: true,
     },
-    comments: [{
-      type: Schema.Types.ObjectId,
-      ref: "Comment"
-    }],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
     averageScore: {
       type: Number,
-      required: false
+      required: false,
     },
     sentimentScore: {
       type: String,
-      required: false
+      required: false,
     },
-    queries: [{
-      type: Schema.Types.ObjectId,
-      ref: "Query"
-    }],
+    queries: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Query",
+      },
+    ],
     JSONPost: {
       type: Object,
-      required: false
-    }
+      required: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = Post = mongoose.model("Post", PostSchema)
+module.exports = Post = mongoose.model("Post", PostSchema);

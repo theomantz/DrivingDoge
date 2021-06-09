@@ -69,8 +69,6 @@ const stockTickers = {
   TSLA: "TESLA",
 };
 
-
-
 const assetClasses = {
   CRYPTO: "CRYPTOCURRENCY",
   STOCKS: "SECURITIES",
@@ -80,9 +78,8 @@ const assetClasses = {
   GOLD: "GOLD",
 };
 
-
 module.exports = Object.freeze({
   cryptoTickers: cryptoTickers,
   stockTickers: stockTickers,
-  assetClasses: assetClasses
-})
+  assetClasses: assetClasses,
+});

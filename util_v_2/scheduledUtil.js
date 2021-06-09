@@ -1,22 +1,28 @@
-const express = require('express')
+/* 
+Eventually this will be the file that runs the scheduled queries. Once hosting is sorted out.
+Currently Heroku is prohibitive in terms of cost. Developer is looking at a self-hosted option.
+ */
+
+const express = require("express");
 const app = express();
-const path = require('path')
+const path = require("path");
 
-const mongoose = require("mongoose")
-const db = require('../config/keys').mongoURI;
-
+const mongoose = require("mongoose");
+const db = require("../config/keys").mongoURI;
 
 mongoose
   .connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
   })
-  .then(() => console.log('Connected to MongoDB Successfully through Scheduled'))
-  .catch(err => console.log(err))
+  .then(() =>
+    console.log("Connected to MongoDB Successfully through Scheduled")
+  )
+  .catch((err) => console.log(err));
 
-const generateQuery = require('./queryUtilByJson')
-const { stockTickers, assetClasses } = require('../config/assets')
+const generateQuery = require("./queryUtilByJson");
+const { stockTickers, assetClasses } = require("../config/assets");
 
 const defaultSearch = {
   queryString: "BTC",
@@ -35,7 +41,7 @@ const defaultSearch = {
   comment: {
     sort: "relevance",
     time: "week",
-    count: 100
+    count: 100,
   },
 };
 
@@ -54,17 +60,11 @@ const cryptos = {
   XRP: "XRP",
   XTZ: "TEZOS",
 };
-  // const result = async () => {
-  //   let query = await generateQuery(defaultSearch)
-  //   console.log('done')
-  //   console.log(query)
-  //   process.exit()
-  // }
 
 [assetClasses].forEach((assetObject) => {
   Object.values(assetObject).forEach(async (a) => {
     search = defaultSearch;
     search.queryString = a;
     await generateQuery(search);
-  })
+  });
 });

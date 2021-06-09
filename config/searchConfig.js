@@ -1,7 +1,7 @@
 module.exports = {
   params: {
-    sort: 'relevance',
-    time: 'hour',
+    sort: "relevance",
+    time: "hour",
     subreddit: {
       limit: 5,
       time: "all",

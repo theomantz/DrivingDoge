@@ -1,17 +1,25 @@
+// Dependencies
 require("newrelic");
+const { DateTime, Duration } = require('luxon')
+
+// Express API
 const express = require("express");
 const app = express();
 const path = require("path");
 
 // Mongoose Models for API
-const Query = require("../../models/Query");
-const Subreddits = require("../../models/Subreddit");
-const Posts = require("../../models/Post");
-const validateQuery = require("../../validation/query");
+const Query = require("./models/Query");
+const Subreddits = require("./models/Subreddit");
+const Posts = require("./models/Post");
 
-// Query API
-const query = require("./routes/api/data");
-app.use("/api/asset", query);
+// Modules
+const validateQuery = require("./validation/query");
+const generateQuery = require('./util_v_2/queryUtilByJson')
+const constructResponse = require("./util_v_2/constructResponse");
+
+// Data API
+const data = require("./routes/api/data");
+app.use("/api/asset", data);
 
 // Public / Static Assets
 app.use(express.static("public"));
@@ -20,7 +28,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-// Database Setup
+// MongoDB Setup
 const mongoose = require("mongoose");
 const db = require("./config/keys").mongoURI;
 
