@@ -37,7 +37,7 @@ function clearData() {
     .remove();
 
   d3.selectAll(".assetOption").remove();
-  d3.selectAll(".chart-metrics-table, .default-metrics, .chart")
+  d3.selectAll(".chart-metrics-table,.default-metrics,.chart,.chart-static")
     .transition()
     .duration(750)
     .style("font-size", "0px")

@@ -13,6 +13,32 @@ class Treemap {
     this.appendPostInfo = this.appendPostInfo.bind(this);
   }
 
+  showData(d) {
+    this.clearPrevData();
+
+    
+    const timeout = () => {
+      this.appendPostInfo(d);
+    }
+
+    setTimeout(timeout, 500);
+  }
+
+  clearPrevData() {
+    let selector;
+    if (document.getElementsByClassName("default-metrics").length) {
+      selector = ".default-metrics";
+    } else {
+      selector = ".detailed-metrics-table";
+    }
+
+    d3.selectAll(selector)
+      .transition()
+      .duration(500)
+      .style("font-size", "0px")
+      .remove();
+  }
+
   appendPostInfo(d) {
     const { name, sub, upvotes, commentCount, averageScore } = d.data;
 
@@ -26,9 +52,6 @@ class Treemap {
         value: `${averageScore ? averageScore.toFixed(4) : "undefined"}`,
       },
     ];
-
-    d3.selectAll(".default-metrics").remove();
-    d3.selectAll(".detailed-metrics-table").remove();
 
     d3.select("#detailed-metrics")
       .append("table")
@@ -48,6 +71,11 @@ class Treemap {
       .text((d) => {
         return d;
       });
+
+    d3.select(".detailed-metrics-table")
+      .transition()
+      .duration(500)
+      .style("font-size");
   }
 
   appendChartInfo() {
@@ -91,6 +119,7 @@ class Treemap {
 
     d3.select("#about-chart")
       .append("ul")
+      .attr("class", "chart-static")
       .selectAll("bullets")
       .data(bullets)
       .enter()
@@ -180,7 +209,7 @@ class Treemap {
       .style("stroke", "black")
       .style("fill", (t) => d3.interpolateRdYlGn(t.data.averageScore))
       .on("click", (d) => {
-        this.appendPostInfo(d);
+        this.showData(d);
       })
       .on("mouseover", (d) => {
         this.showTitle(d);

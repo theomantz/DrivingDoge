@@ -4,7 +4,6 @@ const router = express.Router();
 
 // Modules
 const validateQuery = require("../../validation/query");
-const generateQuery = require("../../util_v_2/queryUtilByJson");
 const constructResponse = require("../../util_v_2/constructResponse");
 
 // Cache responses from server to avoid restructuring data
@@ -12,7 +11,6 @@ const NodeCache = require("node-cache");
 const resCache = new NodeCache();
 
 router.get("/:query", async (req, res) => {
-  debugger;
 
   try {
     const { errors, isValid, asset } = validateQuery(req.params.query);
@@ -22,7 +20,6 @@ router.get("/:query", async (req, res) => {
     }
 
     if (resCache.has(asset)) {
-      console.log("resCache used!");
       return res.status(200).json(resCache.get(asset));
     }
 
@@ -36,14 +33,8 @@ router.get("/:query", async (req, res) => {
     });
 
     let response = constructResponse(resData);
-
-    if (resCache.has("available")) {
-    } else {
-      available = await Query.distinct("query");
-      resCache.set("available", available);
-    }
-
-    resCache.set(asset, response);
+    response.available = await Query.find().distinct('query');
+    resCache.set(asset, response, 86400)
 
     return res.status(200).json(response);
   } catch (err) {
