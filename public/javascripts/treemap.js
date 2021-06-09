@@ -9,8 +9,20 @@ class Treemap {
     this.width = width - (MARGIN.left + MARGIN.right);
     this.data = data;
     this.svg = svg;
+    this.rems = 16
+  }
 
-    this.appendPostInfo = this.appendPostInfo.bind(this);
+  setRems() {
+    let rems;
+    const width = window.innerWidth
+    if(width > 900) {
+      rems = 16 
+    } else if (width > 400) {
+      rems = 14
+    } else {
+      rems = 12
+    }
+    this.rems = rems
   }
 
   showData(d) {
@@ -75,7 +87,7 @@ class Treemap {
     d3.select(".detailed-metrics-table")
       .transition()
       .duration(500)
-      .style("font-size");
+      .style("font-size", `${this.rems}px`);
   }
 
   appendChartInfo() {

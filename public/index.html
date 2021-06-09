@@ -33,14 +33,25 @@
     <!-- Open Modal on Load -->
 
     <script type="text/javascript">
+      const isMobile = !!navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/ig)
 
-      $(window).on('load', function() {
-        $('#splash').modal({
-          showClose: false,
-          escapeClose: false,
-          clickClose: false,
-        })
-      });
+      $(window).on('load', modalFunction);
+
+      function modalFunction() {
+        if ( isMobile ) {
+          $('#mobile').modal({
+            showClose: false,
+            escapeClose: false,
+            clickClose: false
+          })
+        } else {
+          $('#splash').modal({
+            showClose: false,
+            escapeClose: false,
+            clickClose: false,
+          })
+        }
+      }
 
     </script>
 
@@ -131,6 +142,22 @@
             <i class="icon far fa-envelope-open fa-3x"></i>
           </a>
         </div>
+      </div>
+
+      <div id='mobile' class="modal">
+        <h1 id="mobile-modal-header">[dd]: driving doge</h1>
+        <p class="mobile-modal-text top">
+          Looks like you're on a mobile device!
+        </p>
+        <br/>
+        <p class="mobile-modal-text">
+          Unfortunately DrivingDoge is not mobile friendly.
+          There is too much data to for the visualization to be effective on a small screen.
+          As such, the developer behind DrivingDoge has restricted it to desktop only.
+        </p>
+        <p class="mobile-modal-text">
+          Please visit again on desktop or laptop for the full experience.
+        </p>
       </div>
 
       <div id='splash' class="modal">
