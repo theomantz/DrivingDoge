@@ -1,13 +1,20 @@
+// Dependencies
 const axios = require('axios')
 const cheerio = require('cheerio')
+const { DateTime } = require('luxon')
+
+// Mongoose Models
 const Query = require('../models/Query')
 const Post = require('../models/Post')
 const Comment = require('../models/Comment')
+const Subreddit = require('../models/Subreddit')
+
+// TensorFlow Model
 const processRedditPosts = require('../tensorflow/model')
+
+// Validation / Utilties
 const validateQueryInput = require('../validation/query')
 const constructQueryForResponse = require('../util/queryUtil')
-const Subreddit = require('../models/Subreddit')
-const { DateTime } = require('luxon')
 
 /* 
   queryRequestObject = {

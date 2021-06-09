@@ -18,7 +18,6 @@ function validateQuery(query) {
     .trim()
     .toUpperCase()
 
-    console.log(query)
   query = validText(query) ? query : '';
 
   if(!query.length) { 
